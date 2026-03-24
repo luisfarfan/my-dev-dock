@@ -1,0 +1,78 @@
+@import "tailwindcss";
+@source "./**/*.{tsx,ts}";
+
+
+@theme {
+  --color-background: #0B0B0B;
+  --color-foreground: #F2F2F2;
+
+  --color-card: #141414;
+  --color-card-foreground: #F2F2F2;
+
+  --color-popover: #141414;
+  --color-popover-foreground: #F2F2F2;
+
+  --color-primary: #00FF88;
+  --color-primary-foreground: #0B0B0B;
+
+  --color-secondary: #0066FF;
+  --color-secondary-foreground: #F2F2F2;
+
+  --color-muted: #1F1F1F;
+  --color-muted-foreground: #A1A1A1;
+
+  --color-accent: #2A2A2A;
+  --color-accent-foreground: #F2F2F2;
+
+  --color-destructive: #FF3B30;
+  --color-destructive-foreground: #F2F2F2;
+
+  --color-border: #2A2A2A;
+  --color-input: #1F1F1F;
+  --color-ring: #00FF88;
+
+  --radius-lg: 0.5rem;
+  --radius-md: calc(0.5rem - 2px);
+  --radius-sm: calc(0.5rem - 4px);
+
+  /* Neon Colors - Definidos como colores para que Tailwind habilite utilidades */
+  --color-neon-green: #00FF88;
+  --color-neon-blue: #006BFF;
+  --color-neon-yellow: #FFB800;
+  --color-neon-red: #FF3B30;
+
+  /* Glass Effects */
+  --blur-glass: 12px;
+
+  /* Animations */
+  --animate-glow-pulse: glow-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-subtle-pulse: subtle-pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 1; filter: brightness(1); }
+    50% { opacity: 0.8; filter: brightness(1.5); }
+  }
+  @keyframes subtle-pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+  }
+}
+
+:root {
+  --neon-green: #00FF88;
+  --neon-blue: #006BFF;
+  --neon-yellow: #FFB800;
+  --neon-red: #FF3B30;
+}
+
+@layer base {
+  *, ::after, ::before {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
