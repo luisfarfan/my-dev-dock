@@ -1,0 +1,229 @@
+Actúa como un arquitecto de software senior, experto en frontend, backend y diseño de producto.
+
+Construye una aplicación desktop completa usando:
+
+- Tauri (Rust backend)
+- React + Vite (frontend)
+- TypeScript
+- TailwindCSS
+- shadcn/ui
+- Zustand
+- dnd-kit
+
+--------------------------------------------------
+
+🎯 PRODUCTO: Developer Project Hub
+
+Una aplicación local (desktop) que permite:
+
+- Registrar proyectos locales (rutas absolutas)
+- Leer información del proyecto automáticamente
+- Mostrar estado de git en tiempo real
+- Detectar stack tecnológico
+- Abrir proyectos en editores
+- Crear grupos de proyectos
+- Lanzar múltiples proyectos en paralelo
+
+--------------------------------------------------
+
+🏗️ ARQUITECTURA
+
+Frontend (React):
+- UI
+- Estado global (Zustand)
+- Drag & Drop
+- Visualización de datos
+
+Backend (Tauri + Rust):
+- Acceso al filesystem
+- Ejecución de comandos git
+- Apertura de aplicaciones locales
+- Procesamiento de información de proyectos
+
+--------------------------------------------------
+
+🎨 DISEÑO (MUY IMPORTANTE)
+
+Usar estilo:
+
+👉 Futuristic Neon Glass UI
+
+Características:
+
+- Fondo: negro profundo (#0B0B0B / #0F1115)
+- Efecto glassmorphism sutil:
+  - transparencias ligeras
+  - bordes suaves
+- Glow neón:
+  - verde (#00FF88)
+  - azul (#006BFF)
+- Gradientes: verde → azul
+- Sombras difusas con glow
+- Bordes redondeados (2xl)
+- Hover con iluminación
+- UI minimalista pero tecnológica
+
+Inspiración:
+- dashboards futuristas
+- interfaces de IA
+- SaaS modernos
+
+--------------------------------------------------
+
+🧩 LAYOUT (UNA SOLA PANTALLA)
+
+NO usar sidebar.
+
+Estructura:
+
+1. Top bar:
+   - buscador
+   - botón agregar proyecto
+   - settings
+
+2. Filtros horizontales:
+   - chips de grupos
+   - highlight con glow
+
+3. Grid principal:
+   - proyectos
+   - grupos
+
+--------------------------------------------------
+
+📦 PROJECT CARD
+
+Mostrar:
+
+- nombre
+- path (acortado)
+- stack detectado
+- rama actual
+- último commit
+- estado git
+
+Estados visuales:
+
+- limpio → verde glow
+- cambios sin commit → amarillo glow
+- cambios sin push → rojo glow
+
+Acciones:
+
+- abrir proyecto
+- abrir con editor
+- menú contextual
+
+--------------------------------------------------
+
+🧠 GROUPS
+
+- crear grupos
+- drag & drop
+- botón "Launch All"
+
+Launch All:
+
+- abre proyectos en paralelo
+- configurable delay entre aperturas
+
+--------------------------------------------------
+
+⚡ BACKEND (TAURI + RUST)
+
+Implementar commands:
+
+1. add_project(path)
+
+2. get_project_info(path):
+
+Debe ejecutar:
+
+- git rev-parse --abbrev-ref HEAD → branch
+- git log -1 --pretty=%B → último commit
+- git status --porcelain → cambios sin commit
+- git status → detectar si hay cambios sin push
+
+Detectar:
+
+- Clean
+- Uncommitted changes
+- Unpushed commits
+
+3. detect_stack(path):
+
+Leer:
+
+- package.json
+- requirements.txt
+- pyproject.toml
+- angular.json
+- nx.json
+
+Retornar:
+
+- React
+- Angular
+- Node
+- Python
+- etc.
+
+4. open_project(path, editor):
+
+Ejecutar:
+
+- code path
+- cursor path
+- otros editores
+
+--------------------------------------------------
+
+🧠 ESTADO FRONTEND
+
+projects[]:
+
+- id
+- name
+- path
+- stack[]
+- git:
+  - branch
+  - lastCommit
+  - status
+
+groups[]:
+
+- id
+- name
+- projectIds[]
+
+--------------------------------------------------
+
+🧪 INICIO (IMPORTANTE)
+
+Primero:
+
+- crear UI con mock data
+
+Luego:
+
+- integrar Tauri commands
+- reemplazar mocks con data real
+
+--------------------------------------------------
+
+🎯 OBJETIVO FINAL
+
+- app ultra fluida
+- UX minimalista
+- control total de proyectos
+- información en tiempo real
+- diseño moderno y vendible como producto SaaS
+
+--------------------------------------------------
+
+EXTRA:
+
+- código limpio
+- componentes reutilizables
+- arquitectura escalable
