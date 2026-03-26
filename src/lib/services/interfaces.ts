@@ -18,6 +18,7 @@ export interface ProjectService {
   openInEditor(path: string, editor: EditorType): Promise<void>;
   launchProject(path: string): Promise<void>;
   launchGroup(groupId: string): Promise<void>;
+  openSettingsWindow(): Promise<void>;
   syncProject(id: string): Promise<Project>;
 }
 

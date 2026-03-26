@@ -11,6 +11,7 @@ export default defineConfig(async () => ({
   plugins: [tailwindcss(), react()],
   resolve: {
     alias: {
+      "@": path.resolve(__dirname, "src"),
       "@org/models": path.resolve(__dirname, "src/lib/models.ts"),
       "@org/ui-kit": path.resolve(__dirname, "src/lib/ui-kit/index.ts"),
       "@org/services": path.resolve(__dirname, "src/lib/services/index.ts"),

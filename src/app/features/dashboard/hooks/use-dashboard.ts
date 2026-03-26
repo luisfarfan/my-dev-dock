@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useProjectStore } from '../../../store/use-project-store';
+import { useProjectStore } from '@/app/store/use-project-store';
 
 export function useDashboard() {
   const { 
@@ -12,6 +12,7 @@ export function useDashboard() {
     fetchInstalledEditors,
     setDefaultEditor,
     openProjectWithEditor,
+    openSettingsWindow,
     scanDirectory,
     openProject,
 
@@ -29,7 +30,6 @@ export function useDashboard() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [activeNav, setActiveNav] = useState('projects');
   
   // Group UI states
   const [isCreatingGroup, setIsCreatingGroup] = useState(false);
@@ -53,9 +53,8 @@ export function useDashboard() {
     setSearchQuery,
     viewMode,
     setViewMode,
-    activeNav,
-    setActiveNav,
     openProject,
+    openSettingsWindow,
     openProjectWithEditor,
     removeProject,
     registerProject,

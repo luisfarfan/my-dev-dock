@@ -7,6 +7,7 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
 use tauri::Manager;
+use tauri::WebviewUrl;
 use walkdir::WalkDir;
 
 // --- DTOs (JSON camelCase para el frontend) ---------------------------------
@@ -774,6 +775,26 @@ fn clear_all(state: tauri::State<'_, AppState>) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+fn open_settings_window(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(window) = app.get_webview_window("settings") {
+        let _ = window.show();
+        let _ = window.set_focus();
+        return Ok(());
+    }
+
+    tauri::WebviewWindowBuilder::new(&app, "settings", WebviewUrl::App("index.html?window=settings".into()))
+        .title("Settings")
+        .inner_size(760.0, 560.0)
+        .min_inner_size(680.0, 500.0)
+        .resizable(false)
+        .center()
+        .build()
+        .map_err(|e| format!("Failed to open settings window: {}", e))?;
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -802,6 +823,7 @@ pub fn run() {
             update_group,
             delete_group,
             clear_all,
+            open_settings_window,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

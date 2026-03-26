@@ -154,6 +154,10 @@ export class MockProjectService implements ProjectService {
     console.log(`[MOCK] Launching group ${groupId}`);
   }
 
+  async openSettingsWindow(): Promise<void> {
+    console.log('[MOCK] Opening settings window');
+  }
+
   async syncProject(id: string): Promise<Project> {
     const project = MOCK_PROJECTS.find((p) => p.id === id);
     if (!project) throw new Error('Project not found');

@@ -1,11 +1,16 @@
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { useDashboard } from "./features/dashboard/hooks/use-dashboard";
+import { GlobalCommandPalette } from "./shared/components/global-command-palette";
 import { MainLayout } from "./layouts/MainLayout";
 import { DashboardPage } from "./pages/DashboardPage";
+import { SettingsWindowPage } from "./pages/SettingsWindowPage";
 
 export function App() {
-  const { isLoading, fetchData } = useDashboard();
+  const { isLoading, fetchData, openSettingsWindow } = useDashboard();
+  const searchParams = new URLSearchParams(window.location.search);
+  const windowMode = searchParams.get("window");
+  const isSettingsWindow = windowMode === "settings";
 
   useEffect(() => {
     fetchData();
@@ -28,9 +33,20 @@ export function App() {
     );
   }
 
+  if (isSettingsWindow) {
+    return <SettingsWindowPage />;
+  }
+
   return (
     <MainLayout>
       <DashboardPage />
+      <GlobalCommandPalette
+        onOpenSettingsWindow={openSettingsWindow}
+        onFocusSearch={() => {
+          const searchInput = document.querySelector<HTMLInputElement>('input[placeholder="Find in workspace..."]');
+          searchInput?.focus();
+        }}
+      />
     </MainLayout>
   );
 }

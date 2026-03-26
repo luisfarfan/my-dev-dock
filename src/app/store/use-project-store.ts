@@ -20,6 +20,7 @@ interface ProjectState {
 
   removeProject: (id: string) => Promise<void>;
   openProject: (path: string) => Promise<void>;
+  openSettingsWindow: () => Promise<void>;
   launchGroup: (id: string) => Promise<void>;
   clearAll: () => Promise<void>;
   createGroup: () => Promise<string>;
@@ -141,6 +142,14 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   launchGroup: async (id) => {
     await projectService.launchGroup(id);
+  },
+
+  openSettingsWindow: async () => {
+    try {
+      await projectService.openSettingsWindow();
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
   },
 
   clearAll: async () => {

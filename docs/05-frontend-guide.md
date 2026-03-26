@@ -6,40 +6,71 @@
 
 ## 📁 Estructura del Frontend
 
+Raíz del frontend: `src/` (Vite + React).
+
 ```
-apps/dev-hub/src/
-├── main.tsx                    # Entry point, monta React en #root
-├── App.tsx                     # Root component, layout principal
+src/
+├── main.tsx                 # Entry, monta React
 ├── app/
-│   ├── layout/                 # Componentes de layout
-│   │   ├── TopBar.tsx          # Buscador + Agregar + Settings
-│   │   ├── FilterBar.tsx       # Chips de filtros por grupo
-│   │   └── MainLayout.tsx      # Composición del layout
-│   ├── projects/               # Feature: Proyectos
-│   │   ├── ProjectCard.tsx     # Card individual de proyecto
-│   │   ├── ProjectGrid.tsx     # Grid de cards con D&D
-│   │   └── AddProjectDialog.tsx # Modal agregar proyecto
-│   ├── groups/                 # Feature: Grupos
-│   │   ├── GroupCard.tsx        # Card de grupo con Launch All
-│   │   └── GroupManager.tsx     # CRUD de grupos
-│   └── settings/               # Feature: Settings
-│       └── SettingsPanel.tsx    # Panel de configuración
-├── stores/                     # Estado global (Zustand)
-│   ├── useProjectStore.ts
-│   ├── useGroupStore.ts
+│   ├── app.tsx              # Shell de la app
+│   ├── layouts/             # Layout compartido (ej. MainLayout)
+│   ├── pages/               # Páginas / contenedores de ruta (ej. DashboardPage)
+│   ├── features/            # Dominios verticales (feature-based)
+│   │   ├── projects/
+│   │   │   ├── index.ts     # Barrel público del feature
+│   │   │   └── components/
+│   │   ├── groups/
+│   │   │   ├── index.ts
+│   │   │   └── components/
+│   │   └── dashboard/
+│   │       ├── index.ts
+│   │       ├── components/
+│   │       └── hooks/
+│   ├── shared/              # Utilidades y constantes solo de la app (no ui-kit)
+│   │   ├── constants/
+│   │   └── utils/
+│   └── store/               # Zustand (ej. use-project-store)
+└── lib/                     # UI kit, models, services (@org/*)
+```
+
+### Alias de importación
+
+-   `@/*` → `src/*` (configurado en `tsconfig.json` y `vite.config.ts`).
+-   Ejemplos: `@/app/features/projects`, `@/app/shared/utils/is-tauri-runtime`.
+-   Paquetes internos estables: `@org/models`, `@org/ui-kit`, `@org/services`.
+
+### Barrels por feature (`index.ts`)
+
+Cada carpeta bajo `src/app/features/<nombre>/` expone su API pública desde **`index.ts`**:
+
+-   Importa desde el barrel cuando consumas el feature desde fuera (páginas, otros features):  
+    `import { ProjectCard } from '@/app/features/projects'`.
+-   Dentro del mismo feature, los archivos en `components/` pueden importarse entre sí con rutas relativas o, si prefieres consistencia, también vía `@/app/features/<feature>`.
+-   **No** reexportar en el barrel helpers internos que solo usa un submódulo; mantén el barrel acotado a lo que otros módulos necesitan.
+
+Features actuales:
+
+| Feature     | Barrel                         | Exporta principalmente        |
+|------------|--------------------------------|-------------------------------|
+| `projects` | `@/app/features/projects`     | `ProjectCard`                 |
+| `groups`   | `@/app/features/groups`       | `GroupSpace`                  |
+| `dashboard`| `@/app/features/dashboard`    | `useDashboard`, piezas de UI del hub |
+
 ## 🏗️ Senior Architecture (Feature-Based)
 
 La aplicación sigue un patrón de **Separación de Capas** y **Feature-Based Architecture** para escalar de forma mantenible:
 
-### Directorios Clave (`apps/dev-hub/src/app/`)
+### Directorios Clave (`src/app/`)
 
 -   `layouts/`: Esqueleto visual compartido (SideNav, Header, fondo neón).
 -   `pages/`: Contenedores de alto nivel que representan rutas completas.
--   `features/`: Lógica vertical por dominio (ej: Dashboard).
+-   `features/`: Lógica vertical por dominio (proyectos, grupos, dashboard).
     -   `components/`: Componentes específicos de esa funcionalidad.
     -   `hooks/`: Lógica de estado y efectos extraída en ganchos personalizados.
+    -   `index.ts`: API pública del feature (barrel).
+-   `shared/`: Constantes y utilidades de app que no son un “feature” ni `ui-kit`.
 -   `store/`: Estado global persistente (Zustand).
--   `components/`: Componentes transversales que no pertenecen a `ui-kit`.
+-   `src/lib/`: Componentes reutilizables neon/glass y servicios (`@org/*`).
 
 ### Principios de Seniority React
 -   **Composition**: Se prefiere el uso de `children` y slots para evitar el "prop drilling".

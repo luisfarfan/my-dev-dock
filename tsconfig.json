@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@/*": ["./src/*"],
       "@org/models": ["./src/lib/models.ts"],
       "@org/ui-kit": ["./src/lib/ui-kit/index.ts"],
       "@org/services": ["./src/lib/services/index.ts"]
