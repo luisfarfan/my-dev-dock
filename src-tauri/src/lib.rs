@@ -1,5 +1,6 @@
 use chrono::Local;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -178,11 +179,76 @@ fn read_git_info(project_path: &Path) -> GitStatus {
     }
 }
 
-fn is_monorepo(path: &Path) -> bool {
-    path.join("nx.json").exists()
+/// Raíz de un workspace multi-paquete (Nx, Melos, Cargo workspace, etc.).
+fn is_strict_workspace_root(path: &Path) -> bool {
+    if path.join("nx.json").exists()
         || path.join("turbo.json").exists()
         || path.join("pnpm-workspace.yaml").exists()
-        || path.join("bun.lock").exists()
+        || path.join("lerna.json").exists()
+        || path.join("rush.json").exists()
+        || path.join("melos.yaml").exists()
+        || path.join("go.work").exists()
+        || path.join("WORKSPACE").exists()
+        || path.join("WORKSPACE.bazel").exists()
+        || path.join("MODULE.bazel").exists()
+    {
+        return true;
+    }
+    if package_json_defines_workspaces(path) {
+        return true;
+    }
+    cargo_toml_defines_workspace(path)
+}
+
+fn package_json_defines_workspaces(dir: &Path) -> bool {
+    let file = dir.join("package.json");
+    let Ok(contents) = fs::read_to_string(&file) else {
+        return false;
+    };
+    let Ok(v) = serde_json::from_str::<Value>(&contents) else {
+        return false;
+    };
+    match v.get("workspaces") {
+        Some(Value::Array(a)) => !a.is_empty(),
+        Some(Value::Object(o)) => o
+            .get("packages")
+            .and_then(Value::as_array)
+            .is_some_and(|a| !a.is_empty()),
+        _ => false,
+    }
+}
+
+/// `Cargo.toml` con tabla `[workspace]` (no solo un crate miembro).
+fn cargo_toml_defines_workspace(dir: &Path) -> bool {
+    let file = dir.join("Cargo.toml");
+    let Ok(contents) = fs::read_to_string(&file) else {
+        return false;
+    };
+    for line in contents.lines() {
+        let code = line.split('#').next().unwrap_or(line).trim();
+        if code == "[workspace]" {
+            return true;
+        }
+    }
+    false
+}
+
+/// Algún ancestro estricto entre `path` y `base` (sin contar `base`) es raíz de workspace.
+fn has_strict_workspace_ancestor(path: &Path, base: &Path) -> bool {
+    let mut cur = path.parent();
+    while let Some(anc) = cur {
+        if anc == base {
+            break;
+        }
+        if !anc.starts_with(base) {
+            break;
+        }
+        if is_strict_workspace_root(anc) {
+            return true;
+        }
+        cur = anc.parent();
+    }
+    false
 }
 
 fn is_project_root(path: &Path) -> bool {
@@ -620,7 +686,7 @@ async fn scan_directory(
     }
 
     let mut found: Vec<ProjectDetails> = Vec::new();
-    let walker = WalkDir::new(base)
+    let mut walker = WalkDir::new(base)
         .min_depth(1)
         .max_depth(5)
         .into_iter()
@@ -631,14 +697,31 @@ async fn scan_directory(
                 && name != ".git"
                 && name != "dist"
                 && name != "build"
+                && name != ".nx"
+                && name != ".dart_tool"
+                && name != "coverage"
         });
 
-    for entry in walker {
+    while let Some(entry) = walker.next() {
         let e = entry.map_err(|err| err.to_string())?;
         let path = e.path();
-        if path.is_dir() && (is_monorepo(path) || is_project_root(path)) {
+        if !path.is_dir() {
+            continue;
+        }
+        let strict_root = is_strict_workspace_root(path);
+        let proj_root = is_project_root(path);
+        if !(strict_root || proj_root) {
+            continue;
+        }
+        let include = if strict_root {
+            true
+        } else {
+            proj_root && !has_strict_workspace_ancestor(path, base)
+        };
+        if include {
             if let Some(details) = build_project_details(path) {
                 found.push(details);
+                walker.skip_current_dir();
             }
         }
     }
