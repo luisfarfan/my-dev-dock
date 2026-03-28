@@ -22,13 +22,19 @@ Una app desktop que permite:
 
 | Funcionalidad | Descripción |
 |--------------|-------------|
-| **Registrar proyectos** | Agregar rutas absolutas a proyectos locales |
-| **Información automática** | Lee `package.json`, `angular.json`, `nx.json`, etc. |
-| **Estado de Git en tiempo real** | Branch actual, último commit, cambios pendientes |
-| **Detección de stack** | Identifica React, Angular, Python, Node, etc. |
-| **Abrir en editores** | VS Code, Cursor, u otros editores configurados |
-| **Grupos de proyectos** | Agrupar proyectos por contexto (trabajo, personal, etc.) |
-| **Launch All** | Abrir múltiples proyectos en paralelo con delay configurable |
+| **Registrar proyectos** | Ruta absoluta manual o **escaneo de carpeta padre** (hasta 5 niveles de profundidad) |
+| **Escaneo “workspace-aware”** | Un proyecto por raíz lógica: Nx, Turborepo, pnpm/npm **workspaces**, Lerna, Rush, **Melos** (Flutter/Dart), **Cargo** `[workspace]`, **Go** `go.work`, **Bazel**. No duplica cada `apps/*` / `packages/*`. Tras registrar una raíz, **no sigue bajando** en ese árbol |
+| **Información automática** | Heurísticas sobre `package.json`, `Cargo.toml`, `go.mod`, Python, etc. |
+| **Estado de Git** | Rama, mensaje del último commit, **marca de tiempo ISO del último commit** (ordenación), cambios sin commitear |
+| **Detección de stack** | React, Vue, Angular, Next, Nx, Rust, Go, Python, Docker, etc. (según archivos presentes) |
+| **Editores** | Cursor, VS Code, Zed, WebStorm, Sublime, Neovim, Antigravity; editor por defecto y selector al abrir |
+| **Ordenación** | Por nombre, fecha de registro, **última apertura desde el hub**, fecha del último commit Git, estado Git |
+| **Grupos** | Agrupar proyectos (incl. drag-and-drop), **lanzar todos** con delay configurable |
+| **Apariencia** | Varios **temas UI** (variables CSS + `data-theme`); **i18n** (`react-i18next`) |
+| **Multi-ventana** | Sincronización de tema y ajustes entre ventanas vía **eventos Tauri** |
+| **Paleta de comandos** | Atajos globales (búsqueda, ajustes, etc.) |
+
+> Detalle técnico para agentes de IA: [00-ai-brief.md](./00-ai-brief.md). README en inglés: [../README.md](../README.md).
 
 ---
 
@@ -40,7 +46,7 @@ Una app desktop que permite:
 | **Framework** | Tauri v2 |
 | **Frontend** | React 19 + Vite + TypeScript |
 | **Backend nativo** | Rust (integrado en Tauri) |
-| **Persistencia** | Local filesystem (JSON o SQLite) |
+| **Persistencia** | JSON en directorio de datos de la app (Tauri) |
 | **Red** | No requiere conexión a internet |
 
 ---

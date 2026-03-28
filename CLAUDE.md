@@ -9,7 +9,9 @@
 
 ## What is this Project?
 
-A **Tauri v2 desktop app** (React + Vite + Rust) that manages local development projects: register paths, git status, tech stacks, editors, groups, and launching projects.
+A **Tauri v2 desktop app** (React + Vite + Rust) that manages **local** development projects: register paths, **smart parent-folder scan** (Nx / Turborepo / pnpm-npm workspaces / Lerna / Rush / Melos / Cargo workspace / Go work / Bazel — one root per workspace, pruned walk), Git info (incl. commit timestamp for sort), stack heuristics, **default editor + launch**, **groups** with drag-and-drop and batch launch, **sort by usage** (`lastOpenedAt` from hub), **UI themes** and **i18n**, **multi-window settings sync** via Tauri events.
+
+**Capability ground truth (keep docs in sync):** [docs/00-ai-brief.md](./docs/00-ai-brief.md). **Human README:** [README.md](./README.md).
 
 ## Architecture Summary
 
@@ -24,6 +26,7 @@ A **Tauri v2 desktop app** (React + Vite + Rust) that manages local development 
 
 | Topic | Doc |
 |------|-----|
+| **AI brief (capabilities + commands)** | [docs/00-ai-brief.md](./docs/00-ai-brief.md) |
 | Overview | [docs/01-project-overview.md](./docs/01-project-overview.md) |
 | Architecture | [docs/02-architecture.md](./docs/02-architecture.md) |
 | Folder layout | [docs/03-monorepo-structure.md](./docs/03-monorepo-structure.md) |

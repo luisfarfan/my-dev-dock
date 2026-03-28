@@ -3,7 +3,7 @@
 > **Proyecto**: Developer Project Hub  
 > **Tipo**: Aplicación desktop **Tauri v2** + React (Vite), repo único (sin Nx)  
 > **Gestor de paquetes**: **Bun**  
-> **Última actualización**: 2026-03-22
+> **Última actualización**: 2026-03-28
 
 ---
 
@@ -11,6 +11,7 @@
 
 | #  | Documento | Descripción |
 |----|-----------|-------------|
+| 0  | [**Brief para IA / agentes (inglés)**](./00-ai-brief.md) | Capacidades del producto, comandos Tauri, rutas clave — **leer antes de tocar código** |
 | 1  | [Visión General del Proyecto](./01-project-overview.md) | Qué es, qué hace, y cuál es el producto final |
 | 2  | [Arquitectura del Sistema](./02-architecture.md) | Diagrama de arquitectura, capas, y cómo se comunican |
 | 3  | [Estructura del repositorio](./03-monorepo-structure.md) | Mapa de carpetas y convenciones (histórico: título antiguo “monorepo”) |
@@ -28,8 +29,12 @@
 
 | Documento | Propósito |
 |-----------|-----------|
-| [AGENTS.md](../AGENTS.md) | Instrucciones para editores AI (Cursor, etc.) |
-| [CLAUDE.md](../CLAUDE.md) | Instrucciones para Claude Code |
+| [**00-ai-brief.md**](./00-ai-brief.md) | Resumen **machine-friendly**: funcionalidades reales, lista de commands Rust, archivos críticos, limitaciones |
+| [README raíz](../README.md) | Descripción del producto en inglés, quick start, tabla de capacidades |
+| [AGENTS.md](../AGENTS.md) | Reglas obligatorias (Bun, servicios, no `invoke` en componentes, etc.) |
+| [CLAUDE.md](../CLAUDE.md) | Igual que AGENTS para Claude Code |
+
+**Orden sugerido para un agente**: `AGENTS.md` → `00-ai-brief.md` → `01-project-overview.md` → doc específico (05/06/08…).
 
 ---
 

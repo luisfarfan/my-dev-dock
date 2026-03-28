@@ -4,6 +4,10 @@
 
 ---
 
+> **Estado actual del código**: la implementación vive en un solo archivo, [`src-tauri/src/lib.rs`](../../src-tauri/src/lib.rs). Los ejemplos más abajo son **ilustrativos**; la lista real de `#[tauri::command]` y la lógica de **escaneo workspace-aware** están en ese archivo y en [**00-ai-brief.md**](./00-ai-brief.md).
+
+---
+
 ## 📁 Estructura del Backend
 
 ```
