@@ -43,6 +43,8 @@ export const DashboardPage: React.FC = () => {
     openSettingsWindow,
     setDefaultEditor,
     scanDirectory,
+    projectSortLabel,
+    patchSettings,
   } = useDashboard();
 
   const sensors = useSensors(
@@ -99,6 +101,7 @@ export const DashboardPage: React.FC = () => {
         <DashboardProjectsSection
           viewMode={viewMode}
           projects={projects}
+          sortLabel={projectSortLabel}
           isClearing={isClearing}
           onClearingChange={setIsClearing}
           onRemoveProject={removeProject}
@@ -131,6 +134,7 @@ export const DashboardPage: React.FC = () => {
         installedEditors={installedEditors}
         settings={settings}
         onSelectDefaultEditor={(editor) => setDefaultEditor(editor)}
+        onPatchSettings={patchSettings}
       />
 
       <OpenProjectEditorModal

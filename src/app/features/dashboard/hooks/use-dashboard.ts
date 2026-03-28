@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useProjectStore } from '@/app/store/use-project-store';
+import { projectSortSubtitle, sortProjectsBySettings } from '@/lib/project-sort';
 
 export function useDashboard() {
   const { 
@@ -11,6 +12,7 @@ export function useDashboard() {
     fetchData, 
     fetchInstalledEditors,
     setDefaultEditor,
+    patchSettings,
     openProjectWithEditor,
     openSettingsWindow,
     scanDirectory,
@@ -37,14 +39,22 @@ export function useDashboard() {
   const [dndActiveGroupId, setDndActiveGroupId] = useState<string | null>(null);
 
   const filteredProjects = useMemo(() => {
-    return projects.filter(p => 
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.path.toLowerCase().includes(searchQuery.toLowerCase())
+    const q = searchQuery.toLowerCase();
+    const filtered = projects.filter(
+      (p) => p.name.toLowerCase().includes(q) || p.path.toLowerCase().includes(q),
     );
-  }, [projects, searchQuery]);
+    if (!settings) return filtered;
+    return sortProjectsBySettings(filtered, settings);
+  }, [projects, searchQuery, settings]);
+
+  const projectSortLabel = useMemo(
+    () => (settings ? projectSortSubtitle(settings) : ''),
+    [settings],
+  );
 
   return {
     projects: filteredProjects,
+    projectSortLabel,
     groups,
     settings,
     installedEditors,
@@ -64,7 +74,7 @@ export function useDashboard() {
     fetchData,
     fetchInstalledEditors,
     setDefaultEditor,
-
+    patchSettings,
 
     createGroup,
     updateGroup,

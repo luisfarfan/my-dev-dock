@@ -36,7 +36,7 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
             <Layers className="w-5 h-5 text-neon-blue" />
           </div>
           <div>
-            <h2 className="text-2xl font-black uppercase tracking-widest text-white">Smart Groups</h2>
+            <h2 className="text-2xl font-black uppercase tracking-widest text-foreground">Smart Groups</h2>
             <div className="flex items-center gap-2 mt-1">
               <GlowBadge size="xs" color="green">
                 {groups.length} CONFIGURED
@@ -50,7 +50,7 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
 
         <NeonButton
           variant="outline"
-          className="h-11 px-8 text-xs font-black uppercase tracking-widest border-white/10 hover:border-primary/50 group gap-3"
+          className="h-11 px-8 text-xs font-black uppercase tracking-widest border-border hover:border-primary/50 group gap-3"
           onClick={async () => {
             const id = await onCreateGroup();
             onEditingGroupIdChange(id);
@@ -94,7 +94,7 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
         </AnimatePresence>
 
         {groups.length === 0 && (
-          <div className="col-span-full py-16 border-2 border-dashed border-white/5 rounded-[2.5rem] flex items-center justify-center bg-white/[0.01]">
+          <div className="col-span-full py-16 border-2 border-dashed border-border rounded-[2.5rem] flex items-center justify-center bg-muted/20">
             <div className="flex flex-col items-center gap-4 opacity-20">
               <Users className="w-12 h-12" />
               <span className="text-[10px] font-black uppercase tracking-widest">No Launch Groups Defined</span>

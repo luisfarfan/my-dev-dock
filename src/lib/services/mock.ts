@@ -10,10 +10,12 @@ const MOCK_PROJECTS: Project[] = [
     git: {
       branch: 'main',
       lastCommit: 'feat: add neon glass theme',
+      lastCommitAt: '2026-03-20T10:00:00.000Z',
       status: 'clean',
       changesCount: 0,
     },
     addedAt: new Date().toISOString(),
+    lastOpenedAt: '2026-03-28T12:00:00.000Z',
   },
   {
     id: '2',
@@ -23,10 +25,12 @@ const MOCK_PROJECTS: Project[] = [
     git: {
       branch: 'develop',
       lastCommit: 'fix: types for cargo',
+      lastCommitAt: '2026-03-25T15:30:00.000Z',
       status: 'uncommitted',
       changesCount: 5,
     },
     addedAt: new Date().toISOString(),
+    lastOpenedAt: '2026-03-27T09:00:00.000Z',
   },
   {
     id: '3',
@@ -36,6 +40,7 @@ const MOCK_PROJECTS: Project[] = [
     git: {
       branch: 'feat/auth',
       lastCommit: 'feat: implement jwt',
+      lastCommitAt: '2026-03-10T08:00:00.000Z',
       status: 'unpushed',
       changesCount: 0,
     },
@@ -56,8 +61,8 @@ const MOCK_SETTINGS: AppSettings = {
   defaultEditor: 'cursor',
   gitPollInterval: 5000,
   launchDelay: 1000,
-  sortBy: 'name',
-  sortDirection: 'asc',
+  sortBy: 'lastOpenedAt',
+  sortDirection: 'desc',
 };
 
 export class MockProjectService implements ProjectService {
@@ -87,6 +92,7 @@ export class MockProjectService implements ProjectService {
         changesCount: 0,
       },
       addedAt: new Date().toISOString(),
+      lastOpenedAt: undefined,
     };
     MOCK_PROJECTS.push(newProject);
     return [newProject];
@@ -101,6 +107,7 @@ export class MockProjectService implements ProjectService {
       git: {
         branch: 'main',
         lastCommit: 'initial commit',
+        lastCommitAt: new Date().toISOString(),
         status: 'clean',
         changesCount: 0,
       },
@@ -144,14 +151,29 @@ export class MockProjectService implements ProjectService {
 
   async openInEditor(path: string, editor: EditorType): Promise<void> {
     console.log(`[MOCK] Opening ${path} in ${editor}`);
+    const project = MOCK_PROJECTS.find((p) => p.path === path);
+    if (project) {
+      project.lastOpenedAt = new Date().toISOString();
+    }
   }
 
   async launchProject(path: string): Promise<void> {
     console.log(`[MOCK] Launching project at ${path}`);
+    const project = MOCK_PROJECTS.find((p) => p.path === path);
+    if (project) {
+      project.lastOpenedAt = new Date().toISOString();
+    }
   }
 
   async launchGroup(groupId: string): Promise<void> {
     console.log(`[MOCK] Launching group ${groupId}`);
+    const group = MOCK_GROUPS.find((g) => g.id === groupId);
+    if (!group) return;
+    const now = new Date().toISOString();
+    for (const id of group.projectIds) {
+      const project = MOCK_PROJECTS.find((p) => p.id === id);
+      if (project) project.lastOpenedAt = now;
+    }
   }
 
   async openSettingsWindow(): Promise<void> {

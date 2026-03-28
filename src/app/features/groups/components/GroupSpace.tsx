@@ -48,7 +48,7 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
       className={`relative transition-all duration-500 ${isOver ? 'scale-[1.02]' : ''}`}
     >
       <GlassCard
-        className={`p-6 border-white/5 bg-white/[0.02] flex flex-col gap-4 min-h-[160px] ${
+        className={`p-6 border-border/80 bg-muted/25 flex flex-col gap-4 min-h-[160px] ${
           isDndActive ? 'border-primary/40 shadow-[0_0_20px_rgba(0,255,136,0.1)]' : ''
         } ${isOver ? 'bg-primary/5 border-primary/40' : ''}`}
       >
@@ -60,7 +60,7 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
                   autoFocus
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="bg-black/40 border border-white/10 rounded px-2 py-1 text-sm font-black text-primary focus:outline-none focus:border-primary/50 w-full"
+                  className="bg-input border border-border rounded px-2 py-1 text-sm font-black text-primary focus:outline-none focus:border-primary/50 w-full"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleRename();
                     if (e.key === 'Escape') onEditToggle();
@@ -74,7 +74,7 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
                 </button>
               </div>
             ) : (
-              <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/80 truncate">
+              <h3 className="text-sm font-black uppercase tracking-[0.2em] text-foreground/90 truncate">
                 {group.name}
               </h3>
             )}
@@ -88,7 +88,7 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
             <NeonButton
               variant="ghost"
               size="icon"
-              className={`w-8 h-8 ${isEditingName ? 'text-primary' : 'text-white/40'}`}
+              className={`w-8 h-8 ${isEditingName ? 'text-primary' : 'text-muted-foreground'}`}
               onClick={onEditToggle}
             >
               <Pencil className="w-3.5 h-3.5" />
@@ -97,7 +97,7 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
             <NeonButton
               variant="ghost"
               size="icon"
-              className={`w-8 h-8 ${isDndActive ? 'text-primary bg-primary/10' : 'text-white/40'}`}
+              className={`w-8 h-8 ${isDndActive ? 'text-primary bg-primary/10' : 'text-muted-foreground'}`}
               onClick={onDndToggle}
             >
               <Hand className="w-3.5 h-3.5" />
@@ -106,13 +106,13 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
             <NeonButton
               variant="ghost"
               size="icon"
-              className="w-8 h-8 text-white/40 hover:text-neon-red"
+              className="w-8 h-8 text-muted-foreground hover:text-neon-red"
               onClick={onDelete}
             >
               <Trash2 className="w-3.5 h-3.5" />
             </NeonButton>
 
-            <div className="w-px h-4 bg-white/5 mx-1" />
+            <div className="w-px h-4 bg-border mx-1" />
 
             <NeonButton variant="primary" size="icon" className="w-8 h-8" onClick={onLaunch}>
               <Play className="w-3.5 h-3.5 fill-current" />
@@ -130,15 +130,15 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
                 exit={{ opacity: 0, scale: 0.8 }}
                 className="group relative"
               >
-                <div className="flex items-center gap-2 bg-black/40 border border-white/5 px-2 py-1 rounded-md hover:border-white/20 transition-all">
+                <div className="flex items-center gap-2 bg-muted/60 border border-border px-2 py-1 rounded-md hover:border-primary/30 transition-all">
                   <Folder className="w-3 h-3 text-muted-foreground" />
-                  <span className="text-[10px] font-bold text-white/60 group-hover:text-white transition-colors truncate max-w-[80px]">
+                  <span className="text-[10px] font-bold text-muted-foreground group-hover:text-foreground transition-colors truncate max-w-[80px]">
                     {project.name}
                   </span>
                   {isDndActive && (
                     <button
                       onClick={() => onRemoveProject(project.id)}
-                      className="ml-1 text-white/20 hover:text-neon-red transition-colors"
+                      className="ml-1 text-muted-foreground/50 hover:text-neon-red transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>

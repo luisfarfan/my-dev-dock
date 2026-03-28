@@ -17,8 +17,8 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       <input
         type="text"
         className="
-          bg-white/[0.03] border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm
-          focus:outline-none focus:border-primary/50 focus:bg-white/[0.05]
+          bg-input border border-border rounded-lg pl-10 pr-4 py-2 text-sm text-foreground
+          focus:outline-none focus:border-primary/50 focus:bg-card/80
           placeholder:text-muted-foreground/50 transition-all w-full
         "
         {...props}

@@ -10,6 +10,7 @@ import { ProjectCard } from '@/app/features/projects';
 export interface DashboardProjectsSectionProps {
   viewMode: 'grid' | 'list';
   projects: Project[];
+  sortLabel: string;
   isClearing: boolean;
   onClearingChange: (value: boolean) => void;
   onRemoveProject: (id: string) => void;
@@ -22,6 +23,7 @@ export interface DashboardProjectsSectionProps {
 export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> = ({
   viewMode,
   projects,
+  sortLabel,
   isClearing,
   onClearingChange,
   onRemoveProject,
@@ -106,14 +108,16 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
             <Folder className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h2 className="text-2xl font-black uppercase tracking-widest text-white">Active Projects</h2>
+            <h2 className="text-2xl font-black uppercase tracking-widest text-foreground">Active Projects</h2>
             <div className="flex items-center gap-2 mt-1">
               <GlowBadge size="xs" color="blue">
                 {projects.length} DETECTED
               </GlowBadge>
-              <span className="text-[10px] font-bold text-muted-foreground opacity-40 italic">
-                Sorted by recent activity
-              </span>
+              {sortLabel ? (
+                <span className="text-[10px] font-bold text-muted-foreground opacity-40 italic">
+                  {sortLabel}
+                </span>
+              ) : null}
             </div>
           </div>
         </div>
@@ -121,7 +125,7 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
         <div className="flex items-center gap-3">
           <NeonButton
             variant="outline"
-            className="h-11 px-8 text-xs font-black uppercase tracking-widest border-white/10 hover:border-primary/50 group gap-3"
+            className="h-11 px-8 text-xs font-black uppercase tracking-widest border-border hover:border-primary/50 group gap-3"
             onClick={handleScanParentFolder}
           >
             <FolderSearch className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -179,12 +183,12 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
         </AnimatePresence>
 
         {projects.length === 0 && (
-          <div className="col-span-full py-24 border-2 border-dashed border-white/5 rounded-[2.5rem] flex flex-col items-center justify-center gap-6 bg-white/[0.01]">
-            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
-              <Folder className="w-7 h-7 text-white/10" />
+          <div className="col-span-full py-24 border-2 border-dashed border-border rounded-[2.5rem] flex flex-col items-center justify-center gap-6 bg-muted/20">
+            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+              <Folder className="w-7 h-7 text-muted-foreground/40" />
             </div>
             <div className="text-center">
-              <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/20">Empty Workspace</h3>
+              <h3 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/70">Empty Workspace</h3>
               <p className="text-[10px] text-muted-foreground/60 mt-1">
                 No projects have been registered in this machine yet.
               </p>

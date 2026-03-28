@@ -18,9 +18,9 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
   onOpenSettings,
 }) => {
   return (
-    <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 pb-10 border-b border-white/5 relative z-10">
+    <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 pb-10 border-b border-border relative z-10">
       <div>
-        <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic flex items-center gap-4">
+        <h1 className="text-4xl font-black tracking-tighter text-foreground uppercase italic flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-neon-green to-neon-blue flex items-center justify-center p-2 shadow-[0_0_30px_-5px_rgba(0,255,136,0.3)]">
             <Rocket className="text-black w-7 h-7" />
           </div>
@@ -37,11 +37,11 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Find in workspace..."
-            className="bg-black/40 border-white/5 min-w-[320px]"
+            className="min-w-[320px]"
           />
         </div>
-        <div className="w-px h-10 bg-white/5 mx-2" />
-        <div className="flex items-center gap-1 p-1 rounded-lg border border-white/10 bg-black/30">
+        <div className="w-px h-10 bg-border mx-2" />
+        <div className="flex items-center gap-1 p-1 rounded-lg border border-border bg-muted/50">
           <NeonButton
             variant={viewMode === 'grid' ? 'primary' : 'ghost'}
             size="icon"
@@ -64,7 +64,7 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
         <NeonButton
           variant="ghost"
           size="icon"
-          className="w-12 h-12 border border-white/5 group hover:border-primary/50 transition-colors"
+          className="w-12 h-12 border border-border group hover:border-primary/50 transition-colors"
           onClick={onOpenSettings}
         >
           <Settings className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />

@@ -97,9 +97,9 @@ const StackIcon = ({ name, className = '' }: { name: string; className?: string 
           }
         }}
       />
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black/90 backdrop-blur-md border border-white/10 rounded text-[10px] font-black uppercase tracking-widest text-primary opacity-0 group-hover/stack:opacity-100 group-hover/stack:translate-y-0 translate-y-1 pointer-events-none transition-all duration-200 whitespace-nowrap z-[100] shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-popover backdrop-blur-md border border-border rounded text-[10px] font-black uppercase tracking-widest text-primary opacity-0 group-hover/stack:opacity-100 group-hover/stack:translate-y-0 translate-y-1 pointer-events-none transition-all duration-200 whitespace-nowrap z-[100] shadow-lg">
         {name}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 border-x-4 border-x-transparent border-t-4 border-t-black/90" />
+        <div className="absolute top-full left-1/2 -translate-x-1/2 border-x-4 border-x-transparent border-t-4 border-t-popover" />
       </div>
     </div>
   );
@@ -154,7 +154,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     >
       <GlassCard
         glow={getGlowColor()}
-        className={`group flex w-full min-w-0 transition-all duration-300 border-white/5 bg-white/[0.02] hover:bg-white/[0.04] ${
+        className={`group flex w-full min-w-0 transition-all duration-300 border-border/60 bg-muted/20 hover:bg-muted/35 ${
           compact ? 'flex-col items-center p-2 sm:p-3 gap-1.5 sm:gap-2 text-center' : 'flex-col p-6 h-full'
         } ${isDraggable ? 'ring-2 ring-primary/20 bg-primary/[0.02]' : ''}`}
         hoverable
@@ -181,7 +181,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             }`}
           >
             {!compact && (
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 flex items-center justify-center p-2 group-hover:border-primary/50 transition-colors shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-foreground/10 to-transparent border border-border flex items-center justify-center p-2 group-hover:border-primary/50 transition-colors shrink-0">
                 <Folder className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
             )}
@@ -195,8 +195,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               <h3
                 className={
                   compact
-                    ? 'w-full min-w-0 text-center text-[10px] font-black uppercase tracking-tight group-hover:text-white transition-colors line-clamp-2 break-words'
-                    : 'text-lg font-bold group-hover:text-white transition-colors flex items-center gap-2 truncate max-w-full'
+                    ? 'w-full min-w-0 text-center text-[10px] font-black uppercase tracking-tight group-hover:text-foreground transition-colors line-clamp-2 break-words'
+                    : 'text-lg font-bold group-hover:text-foreground transition-colors flex items-center gap-2 truncate max-w-full'
                 }
               >
                 {project.name}
@@ -221,13 +221,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 {project.stack.slice(0, 3).map((s) => (
                   <div
                     key={s}
-                    className="w-5 h-5 rounded-md bg-black/40 border border-white/10 flex items-center justify-center group/stack"
+                    className="w-5 h-5 rounded-md bg-muted border border-border flex items-center justify-center group/stack"
                   >
                     <StackIcon name={s} className="p-1" />
                   </div>
                 ))}
                 {project.stack.length > 3 && (
-                  <div className="w-5 h-5 rounded-md bg-white/5 border border-white/10 flex items-center justify-center text-[8px] text-muted-foreground font-black">
+                  <div className="w-5 h-5 rounded-md bg-muted/80 border border-border flex items-center justify-center text-[8px] text-muted-foreground font-black">
                     +{project.stack.length - 3}
                   </div>
                 )}
@@ -244,18 +244,18 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
         {!compact && (
           <>
-            <div className="flex flex-col gap-3 py-4 border-y border-white/5 mb-6">
+            <div className="flex flex-col gap-3 py-4 border-y border-border mb-6">
               <div className="flex items-center justify-between text-[11px] font-bold tracking-tight">
                 <div className="flex items-center gap-2 text-muted-foreground italic">
                   <GitBranch className="w-3.5 h-3.5" />
                   {project.git.branch}
                 </div>
-                <div className="flex items-center gap-1.5 text-white/40">
+                <div className="flex items-center gap-1.5 text-muted-foreground">
                   <History className="w-3 h-3" />
                   {project.git.changesCount > 0 ? `+${project.git.changesCount} CHANGES` : 'SYNCED'}
                 </div>
               </div>
-              <div className="flex items-start gap-2 p-2 rounded-lg bg-black/20 border border-white/5 h-10 overflow-hidden">
+              <div className="flex items-start gap-2 p-2 rounded-lg bg-muted/40 border border-border h-10 overflow-hidden">
                 <GitCommit className="w-3.5 h-3.5 text-primary/40 flex-shrink-0 mt-0.5" />
                 <span className="text-[10px] text-muted-foreground leading-tight italic line-clamp-2">
                   {project.git.lastCommit}
@@ -268,9 +268,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 {project.stack.map((s) => (
                   <div
                     key={s}
-                    className="w-8 h-8 rounded-lg bg-black/80 border border-white/10 flex items-center justify-center p-2 hover:scale-125 hover:z-10 transition-all group/stack"
+                    className="w-8 h-8 rounded-lg bg-card border border-border flex items-center justify-center p-2 hover:scale-125 hover:z-10 transition-all group/stack ring-1 ring-border/30"
                     style={{
-                      boxShadow: `inset 0 0 0 1px #ffffff12, 0 0 10px ${getStackGlow(s)}33`,
+                      boxShadow: `0 0 10px ${getStackGlow(s)}33`,
                     }}
                   >
                     <StackIcon name={s} />

@@ -1,5 +1,6 @@
 import { AppSettings, EditorType, Group, Project } from '@org/models';
 import { getProjectService, getSettingsService } from '@org/services';
+import { broadcastAppSettingsChanged } from '@/lib/tauri-multi-window-sync';
 import { create } from 'zustand';
 
 interface ProjectState {
@@ -13,7 +14,9 @@ interface ProjectState {
   // Actions
   fetchData: () => Promise<void>;
   fetchInstalledEditors: () => Promise<void>;
+  refreshSettingsFromBackend: () => Promise<void>;
   setDefaultEditor: (editor: EditorType) => Promise<void>;
+  patchSettings: (partial: Partial<AppSettings>) => Promise<void>;
   openProjectWithEditor: (path: string, editor: EditorType) => Promise<void>;
   scanDirectory: (path: string) => Promise<number>;
   registerProject: (path: string) => Promise<void>;
@@ -74,6 +77,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     }
   },
 
+  refreshSettingsFromBackend: async () => {
+    try {
+      const settings = await settingsService.getSettings();
+      set({ settings });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
   setDefaultEditor: async (editor) => {
     const { installedEditors, settings } = get();
     if (!installedEditors.includes(editor)) {
@@ -84,11 +96,24 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     try {
       const updated = await settingsService.updateSettings({ defaultEditor: editor });
       set({ settings: updated });
+      void broadcastAppSettingsChanged();
     } catch (err) {
       set({ error: (err as Error).message });
       if (settings) {
         set({ settings });
       }
+    }
+  },
+
+  patchSettings: async (partial) => {
+    const prev = get().settings;
+    try {
+      const updated = await settingsService.updateSettings(partial);
+      set({ settings: updated });
+      void broadcastAppSettingsChanged();
+    } catch (err) {
+      set({ error: (err as Error).message });
+      if (prev) set({ settings: prev });
     }
   },
   scanDirectory: async (path) => {
@@ -129,11 +154,23 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const { settings } = get();
     if (!settings) return;
     await projectService.openInEditor(path, settings.defaultEditor);
+    try {
+      const projects = await projectService.getProjects();
+      set({ projects: [...projects] });
+    } catch {
+      /* ignore refresh errors */
+    }
   },
 
   openProjectWithEditor: async (path, editor) => {
     try {
       await projectService.openInEditor(path, editor);
+      try {
+        const projects = await projectService.getProjects();
+        set({ projects: [...projects] });
+      } catch {
+        /* ignore */
+      }
     } catch (err) {
       set({ error: (err as Error).message });
       throw err;
@@ -142,6 +179,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   launchGroup: async (id) => {
     await projectService.launchGroup(id);
+    try {
+      const projects = await projectService.getProjects();
+      set({ projects: [...projects] });
+    } catch {
+      /* ignore */
+    }
   },
 
   openSettingsWindow: async () => {

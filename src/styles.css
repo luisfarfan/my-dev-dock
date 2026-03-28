@@ -3,48 +3,47 @@
 
 
 @theme {
-  --color-background: #0B0B0B;
-  --color-foreground: #F2F2F2;
+  --color-background: var(--app-color-background);
+  --color-foreground: var(--app-color-foreground);
 
-  --color-card: #141414;
-  --color-card-foreground: #F2F2F2;
+  --color-card: var(--app-color-card);
+  --color-card-foreground: var(--app-color-card-foreground);
 
-  --color-popover: #141414;
-  --color-popover-foreground: #F2F2F2;
+  --color-popover: var(--app-color-popover);
+  --color-popover-foreground: var(--app-color-popover-foreground);
 
-  --color-primary: #00FF88;
-  --color-primary-foreground: #0B0B0B;
+  --color-primary: var(--app-color-primary);
+  --color-primary-foreground: var(--app-color-primary-foreground);
 
-  --color-secondary: #0066FF;
-  --color-secondary-foreground: #F2F2F2;
+  --color-secondary: var(--app-color-secondary);
+  --color-secondary-foreground: var(--app-color-secondary-foreground);
 
-  --color-muted: #1F1F1F;
-  --color-muted-foreground: #A1A1A1;
+  --color-muted: var(--app-color-muted);
+  --color-muted-foreground: var(--app-color-muted-foreground);
 
-  --color-accent: #2A2A2A;
-  --color-accent-foreground: #F2F2F2;
+  --color-accent: var(--app-color-accent);
+  --color-accent-foreground: var(--app-color-accent-foreground);
 
-  --color-destructive: #FF3B30;
-  --color-destructive-foreground: #F2F2F2;
+  --color-destructive: var(--app-color-destructive);
+  --color-destructive-foreground: var(--app-color-destructive-foreground);
 
-  --color-border: #2A2A2A;
-  --color-input: #1F1F1F;
-  --color-ring: #00FF88;
+  --color-border: var(--app-color-border);
+  --color-input: var(--app-color-input);
+  --color-ring: var(--app-color-ring);
+
+  --color-modal-backdrop: var(--app-modal-backdrop);
 
   --radius-lg: 0.5rem;
   --radius-md: calc(0.5rem - 2px);
   --radius-sm: calc(0.5rem - 4px);
 
-  /* Neon Colors - Definidos como colores para que Tailwind habilite utilidades */
-  --color-neon-green: #00FF88;
-  --color-neon-blue: #006BFF;
-  --color-neon-yellow: #FFB800;
-  --color-neon-red: #FF3B30;
+  --color-neon-green: var(--app-neon-green);
+  --color-neon-blue: var(--app-neon-blue);
+  --color-neon-yellow: var(--app-neon-yellow);
+  --color-neon-red: var(--app-neon-red);
 
-  /* Glass Effects */
   --blur-glass: 12px;
 
-  /* Animations */
   --animate-glow-pulse: glow-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-subtle-pulse: subtle-pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
@@ -58,20 +57,288 @@
   }
 }
 
+/* Default = Neon glass (sin data-theme) */
 :root {
-  --neon-green: #00FF88;
-  --neon-blue: #006BFF;
-  --neon-yellow: #FFB800;
-  --neon-red: #FF3B30;
+  color-scheme: dark;
+
+  --app-color-background: #0b0b0b;
+  --app-color-foreground: #f2f2f2;
+  --app-color-card: #141414;
+  --app-color-card-foreground: #f2f2f2;
+  --app-color-popover: #141414;
+  --app-color-popover-foreground: #f2f2f2;
+  --app-color-primary: #00ff88;
+  --app-color-primary-foreground: #0b0b0b;
+  --app-color-secondary: #0066ff;
+  --app-color-secondary-foreground: #f2f2f2;
+  --app-color-muted: #1f1f1f;
+  --app-color-muted-foreground: #a1a1a1;
+  --app-color-accent: #2a2a2a;
+  --app-color-accent-foreground: #f2f2f2;
+  --app-color-destructive: #ff3b30;
+  --app-color-destructive-foreground: #f2f2f2;
+  --app-color-border: #2a2a2a;
+  --app-color-input: #1f1f1f;
+  --app-color-ring: #00ff88;
+
+  --app-neon-green: #00ff88;
+  --app-neon-blue: #006bff;
+  --app-neon-yellow: #ffb800;
+  --app-neon-red: #ff3b30;
+
+  --app-mesh-a: rgba(0, 255, 136, 0.09);
+  --app-mesh-b: rgba(0, 107, 255, 0.11);
+
+  --neon-green: var(--app-neon-green);
+  --neon-blue: var(--app-neon-blue);
+  --neon-yellow: var(--app-neon-yellow);
+  --neon-red: var(--app-neon-red);
+
   --surface-premium: rgba(15, 15, 18, 0.7);
   --surface-border: rgba(255, 255, 255, 0.08);
   --surface-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
   --surface-shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.28);
+  --surface-inset-highlight: rgba(255, 255, 255, 0.05);
+
+  --floating-panel-bg: rgba(16, 16, 20, 0.8);
+  --floating-panel-border: rgba(255, 255, 255, 0.1);
+  --floating-panel-inset: rgba(255, 255, 255, 0.06);
+
   --desktop-spacing: clamp(0.75rem, 1vw, 1rem);
   --scrollbar-size: 7px;
   --scrollbar-track: transparent;
   --scrollbar-thumb: rgba(255, 255, 255, 0.08);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.24);
+  --scrollbar-thumb-line: rgba(255, 255, 255, 0.18);
+
+  --app-modal-backdrop: rgba(0, 0, 0, 0.6);
+}
+
+/* Aurora nocturna — malla violeta/cian (estilo Aurora UI, dark) */
+[data-theme="aurora"] {
+  color-scheme: dark;
+
+  --app-color-background: #070510;
+  --app-color-foreground: #f0e8ff;
+  --app-color-card: #10081a;
+  --app-color-card-foreground: #f0e8ff;
+  --app-color-popover: #120a1c;
+  --app-color-popover-foreground: #f0e8ff;
+  --app-color-primary: #5eead4;
+  --app-color-primary-foreground: #051016;
+  --app-color-secondary: #c4b5fd;
+  --app-color-secondary-foreground: #0f0518;
+  --app-color-muted: #1a1228;
+  --app-color-muted-foreground: #a89cc4;
+  --app-color-accent: #251838;
+  --app-color-accent-foreground: #f0e8ff;
+  --app-color-destructive: #fb7185;
+  --app-color-destructive-foreground: #fff5f5;
+  --app-color-border: rgba(196, 181, 253, 0.14);
+  --app-color-input: #1a1228;
+  --app-color-ring: #5eead4;
+
+  --app-neon-green: #5eead4;
+  --app-neon-blue: #a78bfa;
+  --app-neon-yellow: #fcd34d;
+  --app-neon-red: #fb7185;
+
+  --app-mesh-a: rgba(94, 234, 212, 0.12);
+  --app-mesh-b: rgba(167, 139, 250, 0.14);
+
+  --surface-premium: rgba(12, 8, 22, 0.72);
+  --surface-border: rgba(196, 181, 253, 0.1);
+  --surface-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --surface-shadow-soft: 0 8px 32px rgba(94, 234, 212, 0.06);
+  --surface-inset-highlight: rgba(196, 181, 253, 0.06);
+
+  --floating-panel-bg: rgba(14, 10, 24, 0.85);
+  --floating-panel-border: rgba(167, 139, 250, 0.14);
+  --floating-panel-inset: rgba(94, 234, 212, 0.05);
+}
+
+/* OLED mínimo — negro puro, acentos discretos */
+[data-theme="oled"] {
+  color-scheme: dark;
+
+  --app-color-background: #000000;
+  --app-color-foreground: #ececec;
+  --app-color-card: #121212;
+  --app-color-card-foreground: #ececec;
+  --app-color-popover: #121212;
+  --app-color-popover-foreground: #ececec;
+  --app-color-primary: #39ff14;
+  --app-color-primary-foreground: #000000;
+  --app-color-secondary: #3b82f6;
+  --app-color-secondary-foreground: #e8f0ff;
+  --app-color-muted: #161616;
+  --app-color-muted-foreground: #8c8c8c;
+  --app-color-accent: #1c1c1c;
+  --app-color-accent-foreground: #ececec;
+  --app-color-destructive: #ff453a;
+  --app-color-destructive-foreground: #fff;
+  --app-color-border: #242424;
+  --app-color-input: #161616;
+  --app-color-ring: #39ff14;
+
+  --app-neon-green: #39ff14;
+  --app-neon-blue: #3b82f6;
+  --app-neon-yellow: #ffd60a;
+  --app-neon-red: #ff453a;
+
+  --app-mesh-a: rgba(57, 255, 20, 0.045);
+  --app-mesh-b: rgba(59, 130, 246, 0.055);
+
+  --surface-premium: rgba(10, 10, 10, 0.88);
+  --surface-border: rgba(255, 255, 255, 0.06);
+  --surface-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  --surface-shadow-soft: 0 6px 24px rgba(0, 0, 0, 0.65);
+  --surface-inset-highlight: rgba(255, 255, 255, 0.04);
+
+  --floating-panel-bg: rgba(14, 14, 14, 0.92);
+  --floating-panel-border: rgba(255, 255, 255, 0.08);
+  --floating-panel-inset: rgba(255, 255, 255, 0.04);
+}
+
+/* Obsidian desk — zinc / índigo (SaaS oscuro) */
+[data-theme="obsidian"] {
+  color-scheme: dark;
+
+  --app-color-background: #0c0e12;
+  --app-color-foreground: #e8eaef;
+  --app-color-card: #141920;
+  --app-color-card-foreground: #e8eaef;
+  --app-color-popover: #141920;
+  --app-color-popover-foreground: #e8eaef;
+  --app-color-primary: #818cf8;
+  --app-color-primary-foreground: #0b0d12;
+  --app-color-secondary: #38bdf8;
+  --app-color-secondary-foreground: #041018;
+  --app-color-muted: #1a1f2a;
+  --app-color-muted-foreground: #94a3b8;
+  --app-color-accent: #1e2433;
+  --app-color-accent-foreground: #e8eaef;
+  --app-color-destructive: #f87171;
+  --app-color-destructive-foreground: #fff5f5;
+  --app-color-border: #252b38;
+  --app-color-input: #1a1f2a;
+  --app-color-ring: #818cf8;
+
+  --app-neon-green: #4ade80;
+  --app-neon-blue: #38bdf8;
+  --app-neon-yellow: #fbbf24;
+  --app-neon-red: #f87171;
+
+  --app-mesh-a: rgba(129, 140, 248, 0.1);
+  --app-mesh-b: rgba(56, 189, 248, 0.09);
+
+  --surface-premium: rgba(16, 20, 28, 0.78);
+  --surface-border: rgba(148, 163, 184, 0.12);
+  --surface-shadow: 0 24px 56px rgba(0, 0, 0, 0.5);
+  --surface-shadow-soft: 0 8px 28px rgba(15, 23, 42, 0.35);
+  --surface-inset-highlight: rgba(255, 255, 255, 0.05);
+
+  --floating-panel-bg: rgba(18, 22, 30, 0.88);
+  --floating-panel-border: rgba(148, 163, 184, 0.14);
+  --floating-panel-inset: rgba(255, 255, 255, 0.05);
+}
+
+/* Día frío — slate / vidrio claro (SaaS día) */
+[data-theme="day"] {
+  color-scheme: light;
+
+  --app-color-background: #f1f5f9;
+  --app-color-foreground: #0f172a;
+  --app-color-card: #ffffff;
+  --app-color-card-foreground: #0f172a;
+  --app-color-popover: #ffffff;
+  --app-color-popover-foreground: #0f172a;
+  --app-color-primary: #059669;
+  --app-color-primary-foreground: #ffffff;
+  --app-color-secondary: #2563eb;
+  --app-color-secondary-foreground: #ffffff;
+  --app-color-muted: #e2e8f0;
+  --app-color-muted-foreground: #64748b;
+  --app-color-accent: #e2e8f0;
+  --app-color-accent-foreground: #0f172a;
+  --app-color-destructive: #dc2626;
+  --app-color-destructive-foreground: #ffffff;
+  --app-color-border: #cbd5e1;
+  --app-color-input: #f8fafc;
+  --app-color-ring: #059669;
+
+  --app-neon-green: #059669;
+  --app-neon-blue: #2563eb;
+  --app-neon-yellow: #d97706;
+  --app-neon-red: #dc2626;
+
+  --app-mesh-a: rgba(5, 150, 105, 0.08);
+  --app-mesh-b: rgba(37, 99, 235, 0.07);
+
+  --surface-premium: rgba(255, 255, 255, 0.78);
+  --surface-border: rgba(15, 23, 42, 0.1);
+  --surface-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+  --surface-shadow-soft: 0 8px 28px rgba(15, 23, 42, 0.06);
+  --surface-inset-highlight: rgba(255, 255, 255, 0.9);
+
+  --floating-panel-bg: rgba(255, 255, 255, 0.92);
+  --floating-panel-border: rgba(15, 23, 42, 0.1);
+  --floating-panel-inset: rgba(255, 255, 255, 0.95);
+
+  --scrollbar-thumb: rgba(15, 23, 42, 0.12);
+  --scrollbar-thumb-hover: rgba(15, 23, 42, 0.22);
+  --scrollbar-thumb-line: rgba(15, 23, 42, 0.2);
+
+  --app-modal-backdrop: rgba(15, 23, 42, 0.28);
+}
+
+/* Alba — papel cálido (día suave) */
+[data-theme="dawn"] {
+  color-scheme: light;
+
+  --app-color-background: #faf7f2;
+  --app-color-foreground: #1c1917;
+  --app-color-card: #ffffff;
+  --app-color-card-foreground: #1c1917;
+  --app-color-popover: #ffffff;
+  --app-color-popover-foreground: #1c1917;
+  --app-color-primary: #c2410c;
+  --app-color-primary-foreground: #fffbeb;
+  --app-color-secondary: #b45309;
+  --app-color-secondary-foreground: #fffbeb;
+  --app-color-muted: #f5f0e8;
+  --app-color-muted-foreground: #78716c;
+  --app-color-accent: #eee8dd;
+  --app-color-accent-foreground: #1c1917;
+  --app-color-destructive: #b91c1c;
+  --app-color-destructive-foreground: #fff5f5;
+  --app-color-border: #e7e0d5;
+  --app-color-input: #fffdfb;
+  --app-color-ring: #c2410c;
+
+  --app-neon-green: #15803d;
+  --app-neon-blue: #1d4ed8;
+  --app-neon-yellow: #b45309;
+  --app-neon-red: #b91c1c;
+
+  --app-mesh-a: rgba(194, 65, 12, 0.06);
+  --app-mesh-b: rgba(180, 83, 9, 0.05);
+
+  --surface-premium: rgba(255, 255, 255, 0.82);
+  --surface-border: rgba(28, 25, 23, 0.1);
+  --surface-shadow: 0 20px 48px rgba(28, 25, 23, 0.07);
+  --surface-shadow-soft: 0 8px 26px rgba(120, 113, 108, 0.08);
+  --surface-inset-highlight: rgba(255, 255, 255, 0.95);
+
+  --floating-panel-bg: rgba(255, 255, 255, 0.94);
+  --floating-panel-border: rgba(120, 113, 108, 0.15);
+  --floating-panel-inset: rgba(255, 255, 255, 0.98);
+
+  --scrollbar-thumb: rgba(28, 25, 23, 0.14);
+  --scrollbar-thumb-hover: rgba(28, 25, 23, 0.26);
+  --scrollbar-thumb-line: rgba(28, 25, 23, 0.22);
+
+  --app-modal-backdrop: rgba(28, 25, 23, 0.25);
 }
 
 @layer base {
@@ -83,8 +350,9 @@
     color: var(--color-foreground);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-image: radial-gradient(circle at 16% 12%, rgba(0, 255, 136, 0.09), transparent 38%),
-      radial-gradient(circle at 78% 86%, rgba(0, 107, 255, 0.11), transparent 46%);
+    background-image:
+      radial-gradient(circle at 16% 12%, var(--app-mesh-a), transparent 38%),
+      radial-gradient(circle at 78% 86%, var(--app-mesh-b), transparent 46%);
     scrollbar-color: transparent transparent;
     scrollbar-width: thin;
     scroll-behavior: smooth;
@@ -119,17 +387,17 @@
   *:hover::-webkit-scrollbar-thumb {
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.18) 0%,
+      var(--scrollbar-thumb-line) 0%,
       var(--scrollbar-thumb) 100%
     );
-    border-color: rgba(255, 255, 255, 0.04);
+    border-color: color-mix(in srgb, var(--scrollbar-thumb) 35%, transparent);
   }
 
   *::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(
       180deg,
       var(--scrollbar-thumb-hover) 0%,
-      rgba(255, 255, 255, 0.14) 100%
+      var(--scrollbar-thumb-line) 100%
     );
   }
 
@@ -144,19 +412,18 @@
   .desktop-glass {
     background: var(--surface-premium);
     border: 1px solid var(--surface-border);
-    box-shadow: var(--surface-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    box-shadow: var(--surface-shadow), inset 0 1px 0 var(--surface-inset-highlight);
     backdrop-filter: blur(18px) saturate(130%);
   }
 
-  /* Must stay visually transparent: overlay titlebar + traffic lights sit in this zone */
   .app-drag-region {
     background: transparent;
   }
 
   .floating-panel {
-    background: rgba(16, 16, 20, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: var(--surface-shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    background: var(--floating-panel-bg);
+    border: 1px solid var(--floating-panel-border);
+    box-shadow: var(--surface-shadow-soft), inset 0 1px 0 var(--floating-panel-inset);
     backdrop-filter: blur(16px);
   }
 }

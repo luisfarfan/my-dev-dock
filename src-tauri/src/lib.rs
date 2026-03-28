@@ -19,6 +19,8 @@ pub struct GitStatus {
     pub last_commit: String,
     pub status: String,
     pub changes_count: i32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last_commit_at: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -32,6 +34,8 @@ pub struct ProjectDetails {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub probable_editor: Option<String>,
     pub added_at: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last_opened_at: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -60,8 +64,8 @@ impl Default for AppSettingsDto {
             default_editor: "cursor".to_string(),
             git_poll_interval: 5000,
             launch_delay: 1000,
-            sort_by: "name".to_string(),
-            sort_direction: "asc".to_string(),
+            sort_by: "lastOpenedAt".to_string(),
+            sort_direction: "desc".to_string(),
         }
     }
 }
@@ -93,9 +97,16 @@ pub struct AppState {
     data_file: PathBuf,
 }
 
+fn normalize_settings_sort_by(settings: &mut AppSettingsDto) {
+    if settings.sort_by == "lastCommit" {
+        settings.sort_by = "lastCommitAt".to_string();
+    }
+}
+
 impl AppState {
     fn from_data_file(data_file: PathBuf) -> Self {
-        let persisted = load_persisted_state(&data_file).unwrap_or_default();
+        let mut persisted = load_persisted_state(&data_file).unwrap_or_default();
+        normalize_settings_sort_by(&mut persisted.settings);
         Self {
             projects: Mutex::new(persisted.projects),
             groups: Mutex::new(persisted.groups),
@@ -138,6 +149,7 @@ fn read_git_info(project_path: &Path) -> GitStatus {
             last_commit: "—".to_string(),
             status: "clean".to_string(),
             changes_count: 0,
+            last_commit_at: None,
         };
     }
 
@@ -145,6 +157,7 @@ fn read_git_info(project_path: &Path) -> GitStatus {
         .unwrap_or_else(|| "main".to_string());
     let last_commit = run_git(&["log", "-1", "--pretty=%s"], project_path)
         .unwrap_or_else(|| "—".to_string());
+    let last_commit_at = run_git(&["log", "-1", "--pretty=%cI"], project_path);
 
     let changes_count = run_git(&["status", "--porcelain"], project_path)
         .map(|s| s.lines().filter(|l| !l.trim().is_empty()).count() as i32)
@@ -161,6 +174,7 @@ fn read_git_info(project_path: &Path) -> GitStatus {
         last_commit,
         status: status.to_string(),
         changes_count,
+        last_commit_at,
     }
 }
 
@@ -364,6 +378,7 @@ fn build_project_details(path: &Path) -> Option<ProjectDetails> {
         git,
         probable_editor,
         added_at: Local::now().to_rfc3339(),
+        last_opened_at: None,
     })
 }
 
@@ -412,6 +427,22 @@ fn resolve_state_file(app: &tauri::AppHandle) -> Result<PathBuf, String> {
         .map_err(|e| format!("Failed resolving app data directory: {}", e))?;
     fs::create_dir_all(&app_data_dir).map_err(|e| format!("Failed creating app data directory: {}", e))?;
     Ok(app_data_dir.join("dev-hub-state.json"))
+}
+
+fn touch_project_last_opened(state: &AppState, project_path: &str) -> Result<(), String> {
+    let ts = Local::now().to_rfc3339();
+    let mut guard = state.projects.lock().map_err(|e| e.to_string())?;
+    let updated = if let Some(p) = guard.iter_mut().find(|p| p.path == project_path) {
+        p.last_opened_at = Some(ts);
+        true
+    } else {
+        false
+    };
+    drop(guard);
+    if updated {
+        persist_state(state)?;
+    }
+    Ok(())
 }
 
 fn open_with_editor(path: &str, editor: &str) -> Result<(), String> {
@@ -568,7 +599,9 @@ async fn register_project(
 
     let mut guard = state.projects.lock().map_err(|e| e.to_string())?;
     if let Some(i) = guard.iter().position(|p| p.path == details.path) {
+        let prev_opened = guard[i].last_opened_at.clone();
         guard[i] = details.clone();
+        guard[i].last_opened_at = prev_opened;
     } else {
         guard.push(details.clone());
     }
@@ -635,8 +668,14 @@ fn remove_project(state: tauri::State<'_, AppState>, id: String) -> Result<(), S
 }
 
 #[tauri::command]
-async fn open_in_editor(path: String, editor: String) -> Result<(), String> {
-    open_with_editor(&path, &editor)
+async fn open_in_editor(
+    state: tauri::State<'_, AppState>,
+    path: String,
+    editor: String,
+) -> Result<(), String> {
+    open_with_editor(&path, &editor)?;
+    touch_project_last_opened(&state, &path)?;
+    Ok(())
 }
 
 #[tauri::command]
@@ -666,7 +705,9 @@ async fn launch_project(state: tauri::State<'_, AppState>, path: String) -> Resu
         .map_err(|e| e.to_string())?
         .default_editor
         .clone();
-    open_with_editor(&path, &default_editor)
+    open_with_editor(&path, &default_editor)?;
+    touch_project_last_opened(&state, &path)?;
+    Ok(())
 }
 
 #[tauri::command]
@@ -686,6 +727,7 @@ async fn launch_group(state: tauri::State<'_, AppState>, group_id: String) -> Re
     for project_id in &group.project_ids {
         if let Some(project) = projects.iter().find(|p| p.id == *project_id) {
             open_with_editor(&project.path, &settings.default_editor)?;
+            touch_project_last_opened(&state, &project.path)?;
             launched += 1;
             if settings.launch_delay > 0 {
                 thread::sleep(Duration::from_millis(settings.launch_delay as u64));

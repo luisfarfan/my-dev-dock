@@ -22,11 +22,11 @@ export const OpenProjectEditorModal: React.FC<OpenProjectEditorModalProps> = ({
   if (!projectPath) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/65 backdrop-blur-sm p-4">
-      <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-black/80 shadow-[0_0_40px_rgba(0,0,0,0.45)] p-6">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-modal-backdrop backdrop-blur-sm p-4">
+      <div className="w-full max-w-lg rounded-2xl border border-border bg-card text-card-foreground shadow-xl p-6">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white">Abrir Proyecto</h3>
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-foreground">Abrir Proyecto</h3>
             <p className="text-[11px] text-muted-foreground mt-1">
               Selecciona el editor para abrir este proyecto.
             </p>
@@ -38,7 +38,7 @@ export const OpenProjectEditorModal: React.FC<OpenProjectEditorModalProps> = ({
 
         <div className="space-y-3">
           {installedEditors.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-xs text-muted-foreground">
+            <div className="rounded-xl border border-border bg-muted/50 p-4 text-xs text-muted-foreground">
               No se detectaron IDEs instalados.
             </div>
           ) : (
@@ -47,10 +47,10 @@ export const OpenProjectEditorModal: React.FC<OpenProjectEditorModalProps> = ({
                 key={editor}
                 type="button"
                 onClick={() => onPickEditor(editor)}
-                className="w-full flex items-center justify-between rounded-xl border border-white/10 bg-white/5 hover:border-white/25 px-4 py-3 text-left transition-colors"
+                className="w-full flex items-center justify-between rounded-xl border border-border bg-muted/40 hover:border-primary/25 px-4 py-3 text-left transition-colors"
               >
                 <div>
-                  <p className="text-sm font-bold text-white">{EDITOR_LABELS[editor] ?? editor}</p>
+                  <p className="text-sm font-bold text-foreground">{EDITOR_LABELS[editor] ?? editor}</p>
                   <p className="text-[11px] text-muted-foreground uppercase tracking-wider">{editor}</p>
                 </div>
                 {settings?.defaultEditor === editor && (

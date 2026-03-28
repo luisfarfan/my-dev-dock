@@ -50,6 +50,8 @@ export type StackType =
 export interface GitInfo {
   branch: string;
   lastCommit: string;
+  /** ISO 8601 timestamp from `git log -1`, when available */
+  lastCommitAt?: string;
   status: GitStatusType;
   changesCount: number;
 }
@@ -65,6 +67,8 @@ export interface Project {
   git: GitInfo;
   probableEditor?: EditorType;
   addedAt: string;
+  /** Set when the project is opened from Dev Hub (ISO 8601) */
+  lastOpenedAt?: string;
 }
 
 /**
@@ -86,12 +90,13 @@ export type EditorType =
   | 'sublime'
   | 'neovim';
 
-export type SortField = 'name' | 'addedAt' | 'lastCommit' | 'status';
+export type SortField = 'name' | 'addedAt' | 'lastCommitAt' | 'lastOpenedAt' | 'status';
 
 export interface AppSettings {
   defaultEditor: EditorType;
   gitPollInterval: number;
   launchDelay: number;
-  sortBy: SortField;
+  /** May include legacy `lastCommit` from older persisted state */
+  sortBy: SortField | 'lastCommit';
   sortDirection: 'asc' | 'desc';
 }

@@ -33,7 +33,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
       onClick={onClick}
       style={style}
       className={`
-        bg-white/[0.03] backdrop-blur-glass border border-white/10 rounded-xl
+        bg-card/50 backdrop-blur-glass border border-border rounded-xl
         p-4 transition-all duration-300
         ${glowClasses[glow]}
         ${cursorClass}

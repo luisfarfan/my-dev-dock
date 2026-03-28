@@ -41,7 +41,7 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-120 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-[18vh] px-4">
+    <div className="fixed inset-0 z-120 bg-modal-backdrop backdrop-blur-sm flex items-start justify-center pt-[18vh] px-4">
       <div className="floating-panel w-full max-w-2xl rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -49,7 +49,7 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
               <Command className="w-4 h-4 text-primary" />
             </div>
             <div>
-              <p className="text-sm font-bold text-white">Command Palette</p>
+              <p className="text-sm font-bold text-foreground">Command Palette</p>
               <p className="text-[11px] text-muted-foreground">Navega rápido por acciones globales.</p>
             </div>
           </div>
@@ -61,13 +61,13 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
         <div className="space-y-2">
           <button
             type="button"
-            className="w-full p-3 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 flex items-center justify-between transition-colors"
+            className="w-full p-3 rounded-xl border border-border bg-muted/40 hover:border-primary/40 flex items-center justify-between transition-colors"
             onClick={async () => {
               setIsOpen(false);
               await onOpenSettingsWindow();
             }}
           >
-            <span className="flex items-center gap-3 text-sm text-white">
+            <span className="flex items-center gap-3 text-sm text-foreground">
               <Settings2 className="w-4 h-4 text-primary" />
               Abrir ventana de settings
             </span>
@@ -76,21 +76,21 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
 
           <button
             type="button"
-            className="w-full p-3 rounded-xl border border-white/10 bg-white/5 hover:border-primary/40 flex items-center justify-between transition-colors"
+            className="w-full p-3 rounded-xl border border-border bg-muted/40 hover:border-primary/40 flex items-center justify-between transition-colors"
             onClick={() => {
               setIsOpen(false);
               onFocusSearch();
             }}
           >
-            <span className="flex items-center gap-3 text-sm text-white">
+            <span className="flex items-center gap-3 text-sm text-foreground">
               <Search className="w-4 h-4 text-neon-blue" />
               Foco en búsqueda global
             </span>
             <span className="text-[11px] text-muted-foreground">⌘K → Search</span>
           </button>
 
-          <div className="w-full p-3 rounded-xl border border-dashed border-white/10 bg-black/20 flex items-center gap-3">
-            <FolderPlus className="w-4 h-4 text-white/50" />
+          <div className="w-full p-3 rounded-xl border border-dashed border-border bg-muted/30 flex items-center gap-3">
+            <FolderPlus className="w-4 h-4 text-muted-foreground" />
             <span className="text-xs text-muted-foreground">
               Próximo paso: atajos para registrar proyecto y crear grupos.
             </span>

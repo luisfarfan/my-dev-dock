@@ -17,8 +17,8 @@ export const NeonButton: React.FC<NeonButtonProps> = ({
   const variants = {
     primary: 'bg-neon-green text-black hover:bg-neon-green/90 shadow-[0_0_15px_-5px_rgba(0,255,136,0.5)]',
     secondary: 'bg-neon-blue text-white hover:bg-neon-blue/90 shadow-[0_0_15px_-5px_rgba(0,107,255,0.5)]',
-    outline: 'bg-transparent border border-white/20 text-white hover:bg-white/5',
-    ghost: 'bg-transparent text-white/70 hover:text-white hover:bg-white/5',
+    outline: 'bg-transparent border border-border text-foreground hover:bg-accent hover:text-accent-foreground',
+    ghost: 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-accent',
     danger: 'bg-neon-red text-white hover:bg-neon-red/90 shadow-[0_0_15px_-5px_rgba(255,59,48,0.5)]',
   };
 
