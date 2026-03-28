@@ -1,0 +1,172 @@
+{
+  "app": {
+    "loading": "Sincronizando Hub..."
+  },
+  "hub": {
+    "title": "Project Hub",
+    "subtitle": "Gestión central y lanzadera",
+    "searchPlaceholder": "Buscar en el workspace...",
+    "viewCompact": "Vista compacta",
+    "viewDetailed": "Vista detallada"
+  },
+  "projects": {
+    "title": "Proyectos activos",
+    "detected": "DETECTADOS",
+    "scanFolder": "Escanear carpeta padre",
+    "register": "Registrar proyecto",
+    "clearAll": "Borrar todo",
+    "clearing": "Borrando...",
+    "emptyTitle": "Workspace vacío",
+    "emptyHint": "Aún no hay proyectos registrados en esta máquina.",
+    "promptPath": "Introduce la ruta del proyecto local:",
+    "promptScanPath": "Introduce la ruta de la carpeta padre para escanear:",
+    "dialogScanTitle": "Selecciona la carpeta padre a escanear",
+    "scanNoProjects": "No se detectaron proyectos en esa carpeta. Verifica la ruta y que los proyectos estén hasta 5 niveles de profundidad.",
+    "scanAdded": "Se agregaron {{count}} proyectos al dashboard.",
+    "scanError": "No se pudo escanear la carpeta: {{message}}",
+    "confirmClear": "Esto borrará TODOS los proyectos y grupos del dashboard. ¿Continuar?",
+    "confirmClearTitle": "Confirmar borrado",
+    "okDelete": "Sí, borrar",
+    "cancel": "Cancelar",
+    "clearDone": "Se borraron todos los proyectos y grupos.",
+    "clearDoneTitle": "Borrado completado",
+    "ok": "OK"
+  },
+  "groups": {
+    "title": "Grupos inteligentes",
+    "configured": "CONFIGURADOS",
+    "hint": "Agrupa tu workspace con lógica",
+    "newCluster": "Nuevo clúster lógico",
+    "empty": "Sin grupos de lanzamiento",
+    "defaultName": "GRUPO {{n}}"
+  },
+  "groupSpace": {
+    "projects": "PROYECTOS",
+    "emptyHint": "No hay proyectos en este grupo. Pulsa la mano para arrastrar proyectos aquí.",
+    "dropHere": "Soltar aquí"
+  },
+  "footer": {
+    "ready": "Listo para lanzar",
+    "dropHint": "Arrastra proyectos a los clústeres"
+  },
+  "commandPalette": {
+    "title": "Paleta de comandos",
+    "subtitle": "Navega rápido por acciones globales.",
+    "openSettings": "Abrir ajustes",
+    "settingsPanelHint": "Panel derecho",
+    "focusSearch": "Foco en búsqueda global",
+    "searchShortcut": "⌘K → Buscar",
+    "comingSoon": "Próximo paso: atajos para registrar proyecto y crear grupos."
+  },
+  "settingsPage": {
+    "title": "Ajustes",
+    "subtitle": "Preferencias globales del workspace local",
+    "closeWindow": "Cerrar ventana"
+  },
+  "settingsDrawer": {
+    "close": "Cerrar panel de ajustes"
+  },
+  "settingsModal": {
+    "title": "Ajustes",
+    "subtitle": "Selecciona el editor por defecto para abrir proyectos.",
+    "defaultEditor": "Editor por defecto",
+    "noIDEs": "No se detectaron IDEs instalados.",
+    "editorNotInstalled": "El editor por defecto actual ({{editor}}) no está instalado."
+  },
+  "language": {
+    "section": "Idioma",
+    "hint": "Idioma de la interfaz de Dev Hub.",
+    "es": "Español",
+    "en": "Inglés"
+  },
+  "openProject": {
+    "title": "Abrir proyecto",
+    "subtitle": "Selecciona el editor para abrir este proyecto.",
+    "noIDEs": "No se detectaron IDEs instalados."
+  },
+  "sort": {
+    "sectionTitle": "Orden de proyectos",
+    "sectionHint": "Cómo se listan los proyectos en el dashboard (tras filtrar por búsqueda).",
+    "direction": "Dirección",
+    "desc": "Descendente",
+    "asc": "Ascendente",
+    "subtitleLine": "Orden: {{field}} · {{tail}}",
+    "fieldLabels": {
+      "name": "nombre",
+      "addedAt": "fecha de registro",
+      "lastCommitAt": "último commit Git",
+      "lastOpenedAt": "última apertura desde el hub",
+      "status": "estado Git"
+    },
+    "tail": {
+      "nameAsc": "A–Z",
+      "nameDesc": "Z–A",
+      "statusAsc": "limpio primero",
+      "statusDesc": "requiere acción primero",
+      "dateAsc": "más antiguo primero",
+      "dateDesc": "más reciente primero"
+    },
+    "options": {
+      "lastOpenedAt": { "label": "Última apertura", "hint": "Desde Dev Hub (MRU)" },
+      "lastCommitAt": { "label": "Último commit Git", "hint": "Fecha del último commit" },
+      "name": { "label": "Nombre", "hint": "Alfabético por carpeta" },
+      "addedAt": { "label": "Registro", "hint": "Cuándo se añadió al hub" },
+      "status": { "label": "Estado Git", "hint": "Limpio / cambios / sin push" }
+    }
+  },
+  "theme": {
+    "appearance": "Apariencia",
+    "appearanceHint": "Tema visual global (Tailwind + variables CSS en <code>styles.css</code>).",
+    "presets": {
+      "neon": {
+        "title": "Neon glass",
+        "hint": "Verde/azul neón, vidrio — identidad actual del producto."
+      },
+      "aurora": {
+        "title": "Aurora nocturna",
+        "hint": "Malla violeta/cian, estilo Aurora UI (premium creativo)."
+      },
+      "oled": {
+        "title": "OLED mínimo",
+        "hint": "Negro puro, acentos contenidos — estilo OLED / bajo brillo."
+      },
+      "obsidian": {
+        "title": "Obsidian desk",
+        "hint": "Pizarra fría zinc/violeta — SaaS oscuro tipo Linear."
+      },
+      "day": {
+        "title": "Día (slate)",
+        "hint": "Claro frío, alto contraste — uso diurno / oficina."
+      },
+      "dawn": {
+        "title": "Alba (papel)",
+        "hint": "Claro cálido, tonos arena — menos fatiga visual."
+      }
+    }
+  },
+  "projectCard": {
+    "launch": "Lanzar",
+    "changes": "+{{count}} CAMBIOS",
+    "synced": "SINCRONIZADO",
+    "status": {
+      "clean": "LIMPIO",
+      "uncommitted": "CAMBIOS",
+      "unpushed": "SIN PUSH",
+      "error": "ERROR"
+    }
+  },
+  "errors": {
+    "editorUnavailable": "Editor no disponible: {{editor}}"
+  },
+  "sidebar": {
+    "brand": "DevHub",
+    "nav": {
+      "projects": "Proyectos",
+      "groups": "Grupos",
+      "activity": "Actividad",
+      "terminal": "Terminal"
+    },
+    "demoUser": "Luis Farfan",
+    "demoRole": "Desarrollador"
+  }
+}

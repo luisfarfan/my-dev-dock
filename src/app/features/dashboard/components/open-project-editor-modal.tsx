@@ -1,5 +1,6 @@
 import { Check, X } from 'lucide-react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AppSettings, EditorType } from '@org/models';
 import { NeonButton } from '@org/ui-kit';
 import { EDITOR_LABELS } from '@/app/shared/constants/editor-labels';
@@ -19,6 +20,7 @@ export const OpenProjectEditorModal: React.FC<OpenProjectEditorModalProps> = ({
   settings,
   onPickEditor,
 }) => {
+  const { t } = useTranslation();
   if (!projectPath) return null;
 
   return (
@@ -26,10 +28,8 @@ export const OpenProjectEditorModal: React.FC<OpenProjectEditorModalProps> = ({
       <div className="w-full max-w-lg rounded-2xl border border-border bg-card text-card-foreground shadow-xl p-6">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-foreground">Abrir Proyecto</h3>
-            <p className="text-[11px] text-muted-foreground mt-1">
-              Selecciona el editor para abrir este proyecto.
-            </p>
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-foreground">{t('openProject.title')}</h3>
+            <p className="text-[11px] text-muted-foreground mt-1">{t('openProject.subtitle')}</p>
           </div>
           <NeonButton variant="ghost" size="icon" className="w-9 h-9" onClick={onClose}>
             <X className="w-4 h-4" />
@@ -39,7 +39,7 @@ export const OpenProjectEditorModal: React.FC<OpenProjectEditorModalProps> = ({
         <div className="space-y-3">
           {installedEditors.length === 0 ? (
             <div className="rounded-xl border border-border bg-muted/50 p-4 text-xs text-muted-foreground">
-              No se detectaron IDEs instalados.
+              {t('openProject.noIDEs')}
             </div>
           ) : (
             installedEditors.map((editor) => (

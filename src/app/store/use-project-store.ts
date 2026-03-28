@@ -1,5 +1,6 @@
 import { AppSettings, EditorType, Group, Project } from '@org/models';
 import { getProjectService, getSettingsService } from '@org/services';
+import i18n from '@/app/i18n/i18n';
 import { broadcastAppSettingsChanged } from '@/lib/tauri-multi-window-sync';
 import { create } from 'zustand';
 
@@ -23,7 +24,6 @@ interface ProjectState {
 
   removeProject: (id: string) => Promise<void>;
   openProject: (path: string) => Promise<void>;
-  openSettingsWindow: () => Promise<void>;
   launchGroup: (id: string) => Promise<void>;
   clearAll: () => Promise<void>;
   createGroup: () => Promise<string>;
@@ -89,7 +89,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   setDefaultEditor: async (editor) => {
     const { installedEditors, settings } = get();
     if (!installedEditors.includes(editor)) {
-      set({ error: `Editor no disponible: ${editor}` });
+      set({ error: i18n.t('errors.editorUnavailable', { editor }) });
       return;
     }
 
@@ -187,14 +187,6 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     }
   },
 
-  openSettingsWindow: async () => {
-    try {
-      await projectService.openSettingsWindow();
-    } catch (err) {
-      set({ error: (err as Error).message });
-    }
-  },
-
   clearAll: async () => {
     try {
       await projectService.clearAll();
@@ -208,7 +200,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const existingGroups = get().groups;
     const groupNumber = existingGroups.length + 1;
     const newGroup = await projectService.createGroup(
-      `GRUPO ${String(groupNumber).padStart(3, '0')}`,
+      i18n.t('groups.defaultName', { n: String(groupNumber).padStart(3, '0') }),
       [],
     );
     set({ groups: [...existingGroups, newGroup] });

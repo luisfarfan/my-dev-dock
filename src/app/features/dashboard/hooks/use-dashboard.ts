@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useProjectStore } from '@/app/store/use-project-store';
 import { projectSortSubtitle, sortProjectsBySettings } from '@/lib/project-sort';
 
 export function useDashboard() {
+  const { t, i18n } = useTranslation();
   const { 
     projects, 
     groups, 
@@ -14,7 +16,6 @@ export function useDashboard() {
     setDefaultEditor,
     patchSettings,
     openProjectWithEditor,
-    openSettingsWindow,
     scanDirectory,
     openProject,
 
@@ -48,8 +49,8 @@ export function useDashboard() {
   }, [projects, searchQuery, settings]);
 
   const projectSortLabel = useMemo(
-    () => (settings ? projectSortSubtitle(settings) : ''),
-    [settings],
+    () => (settings ? projectSortSubtitle(settings, t) : ''),
+    [settings, t, i18n.language],
   );
 
   return {
@@ -64,7 +65,6 @@ export function useDashboard() {
     viewMode,
     setViewMode,
     openProject,
-    openSettingsWindow,
     openProjectWithEditor,
     removeProject,
     registerProject,

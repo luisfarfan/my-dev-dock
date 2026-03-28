@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Layers, Plus, Users } from 'lucide-react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Group, Project } from '@org/models';
 import { GlowBadge, NeonButton } from '@org/ui-kit';
 import { GroupSpace } from '@/app/features/groups';
@@ -28,6 +29,7 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
   onRemoveProjectFromGroup,
   onLaunchGroup,
 }) => {
+  const { t } = useTranslation();
   return (
     <section className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
@@ -36,14 +38,12 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
             <Layers className="w-5 h-5 text-neon-blue" />
           </div>
           <div>
-            <h2 className="text-2xl font-black uppercase tracking-widest text-foreground">Smart Groups</h2>
+            <h2 className="text-2xl font-black uppercase tracking-widest text-foreground">{t('groups.title')}</h2>
             <div className="flex items-center gap-2 mt-1">
               <GlowBadge size="xs" color="green">
-                {groups.length} CONFIGURED
+                {groups.length} {t('groups.configured')}
               </GlowBadge>
-              <span className="text-[10px] font-bold text-muted-foreground opacity-40 italic">
-                Cluster your workspace logically
-              </span>
+              <span className="text-[10px] font-bold text-muted-foreground opacity-40 italic">{t('groups.hint')}</span>
             </div>
           </div>
         </div>
@@ -57,7 +57,7 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
           }}
         >
           <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
-          New Logical Cluster
+          {t('groups.newCluster')}
         </NeonButton>
       </div>
 
@@ -97,7 +97,7 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
           <div className="col-span-full py-16 border-2 border-dashed border-border rounded-[2.5rem] flex items-center justify-center bg-muted/20">
             <div className="flex flex-col items-center gap-4 opacity-20">
               <Users className="w-12 h-12" />
-              <span className="text-[10px] font-black uppercase tracking-widest">No Launch Groups Defined</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">{t('groups.empty')}</span>
             </div>
           </div>
         )}

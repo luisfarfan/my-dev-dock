@@ -1,4 +1,5 @@
 import type { AppSettings, Project, SortField } from '@org/models';
+import type { TFunction } from 'i18next';
 
 /** Maps legacy persisted `sortBy` values to current fields. */
 export function normalizeSortField(sortBy: string): SortField {
@@ -81,30 +82,23 @@ export function sortProjectsBySettings(projects: Project[], settings: AppSetting
   return [...projects].sort((a, b) => compareProjectsPair(a, b, field, direction));
 }
 
-export function projectSortSubtitle(settings: AppSettings): string {
+export function projectSortSubtitle(settings: AppSettings, t: TFunction): string {
   const field = normalizeSortField(settings.sortBy);
   const asc = settings.sortDirection === 'asc';
 
-  const tail =
+  const fieldLabel = t(`sort.fieldLabels.${field}`);
+  const tailKey =
     field === 'name'
       ? asc
-        ? 'A–Z'
-        : 'Z–A'
+        ? 'sort.tail.nameAsc'
+        : 'sort.tail.nameDesc'
       : field === 'status'
         ? asc
-          ? 'clean first'
-          : 'action needed first'
+          ? 'sort.tail.statusAsc'
+          : 'sort.tail.statusDesc'
         : asc
-          ? 'oldest first'
-          : 'newest first';
+          ? 'sort.tail.dateAsc'
+          : 'sort.tail.dateDesc';
 
-  const label: Record<SortField, string> = {
-    name: 'name',
-    addedAt: 'date registered',
-    lastCommitAt: 'last Git commit',
-    lastOpenedAt: 'last opened from hub',
-    status: 'Git status',
-  };
-
-  return `Sorted by ${label[field]} · ${tail}`;
+  return t('sort.subtitleLine', { field: fieldLabel, tail: t(tailKey) });
 }

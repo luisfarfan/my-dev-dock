@@ -1,16 +1,18 @@
 import { Command, FolderPlus, Search, Settings2, X } from 'lucide-react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { NeonButton } from '@org/ui-kit';
 
 export interface GlobalCommandPaletteProps {
-  onOpenSettingsWindow: () => Promise<void>;
+  onOpenSettings: () => Promise<void>;
   onFocusSearch: () => void;
 }
 
 export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
-  onOpenSettingsWindow,
+  onOpenSettings,
   onFocusSearch,
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -49,8 +51,8 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
               <Command className="w-4 h-4 text-primary" />
             </div>
             <div>
-              <p className="text-sm font-bold text-foreground">Command Palette</p>
-              <p className="text-[11px] text-muted-foreground">Navega rápido por acciones globales.</p>
+              <p className="text-sm font-bold text-foreground">{t('commandPalette.title')}</p>
+              <p className="text-[11px] text-muted-foreground">{t('commandPalette.subtitle')}</p>
             </div>
           </div>
           <NeonButton variant="ghost" size="icon" className="w-8 h-8" onClick={() => setIsOpen(false)}>
@@ -64,14 +66,14 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
             className="w-full p-3 rounded-xl border border-border bg-muted/40 hover:border-primary/40 flex items-center justify-between transition-colors"
             onClick={async () => {
               setIsOpen(false);
-              await onOpenSettingsWindow();
+              await onOpenSettings();
             }}
           >
             <span className="flex items-center gap-3 text-sm text-foreground">
               <Settings2 className="w-4 h-4 text-primary" />
-              Abrir ventana de settings
+              {t('commandPalette.openSettings')}
             </span>
-            <span className="text-[11px] text-muted-foreground">Desktop Window</span>
+            <span className="text-[11px] text-muted-foreground">{t('commandPalette.settingsPanelHint')}</span>
           </button>
 
           <button
@@ -84,16 +86,14 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
           >
             <span className="flex items-center gap-3 text-sm text-foreground">
               <Search className="w-4 h-4 text-neon-blue" />
-              Foco en búsqueda global
+              {t('commandPalette.focusSearch')}
             </span>
-            <span className="text-[11px] text-muted-foreground">⌘K → Search</span>
+            <span className="text-[11px] text-muted-foreground">{t('commandPalette.searchShortcut')}</span>
           </button>
 
           <div className="w-full p-3 rounded-xl border border-dashed border-border bg-muted/30 flex items-center gap-3">
             <FolderPlus className="w-4 h-4 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">
-              Próximo paso: atajos para registrar proyecto y crear grupos.
-            </span>
+            <span className="text-xs text-muted-foreground">{t('commandPalette.comingSoon')}</span>
           </div>
         </div>
       </div>

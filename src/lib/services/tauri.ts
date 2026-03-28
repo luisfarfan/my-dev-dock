@@ -55,10 +55,6 @@ export class TauriProjectService implements ProjectService {
     await invoke('launch_group', { groupId });
   }
 
-  async openSettingsWindow(): Promise<void> {
-    await invoke('open_settings_window');
-  }
-
   async syncProject(id: string): Promise<Project> {
     return await invoke<Project>('sync_project', { id });
   }

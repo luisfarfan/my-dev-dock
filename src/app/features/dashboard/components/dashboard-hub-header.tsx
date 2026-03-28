@@ -1,5 +1,6 @@
 import { LayoutGrid, List, Rocket, Settings } from 'lucide-react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { NeonButton, SearchInput } from '@org/ui-kit';
 
 export interface DashboardHubHeaderProps {
@@ -17,6 +18,7 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
   onViewModeChange,
   onOpenSettings,
 }) => {
+  const { t } = useTranslation();
   return (
     <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 pb-10 border-b border-border relative z-10">
       <div>
@@ -24,10 +26,10 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-neon-green to-neon-blue flex items-center justify-center p-2 shadow-[0_0_30px_-5px_rgba(0,255,136,0.3)]">
             <Rocket className="text-black w-7 h-7" />
           </div>
-          Project Hub
+          {t('hub.title')}
         </h1>
         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mt-2 opacity-60">
-          Central Management & Launchpad
+          {t('hub.subtitle')}
         </p>
       </div>
 
@@ -36,8 +38,9 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
           <SearchInput
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Find in workspace..."
+            placeholder={t('hub.searchPlaceholder')}
             className="min-w-[320px]"
+            data-hub-search-input=""
           />
         </div>
         <div className="w-px h-10 bg-border mx-2" />
@@ -47,7 +50,7 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
             size="icon"
             className="w-9 h-9"
             onClick={() => onViewModeChange('grid')}
-            title="Vista compacta"
+            title={t('hub.viewCompact')}
           >
             <LayoutGrid className="w-4 h-4" />
           </NeonButton>
@@ -56,7 +59,7 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
             size="icon"
             className="w-9 h-9"
             onClick={() => onViewModeChange('list')}
-            title="Vista detallada"
+            title={t('hub.viewDetailed')}
           >
             <List className="w-4 h-4" />
           </NeonButton>

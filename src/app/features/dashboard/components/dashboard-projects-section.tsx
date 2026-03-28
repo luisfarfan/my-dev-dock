@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Folder, FolderSearch, Plus, Trash2 } from 'lucide-react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { confirm, message, open } from '@tauri-apps/plugin-dialog';
 import { Project } from '@org/models';
 import { GlowBadge, NeonButton } from '@org/ui-kit';
@@ -32,8 +33,10 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
   onClearAll,
   onOpenInEditor,
 }) => {
+  const { t } = useTranslation();
+
   const handleAddProject = async () => {
-    const path = window.prompt('Introduce la ruta del proyecto local:');
+    const path = window.prompt(t('projects.promptPath'));
     if (path) await onRegisterProject(path);
   };
 
@@ -44,13 +47,13 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
       const result = await open({
         directory: true,
         multiple: false,
-        title: 'Selecciona la carpeta padre a escanear',
+        title: t('projects.dialogScanTitle'),
       });
       if (typeof result === 'string') {
         selectedPath = result;
       }
     } else {
-      const path = window.prompt('Introduce la ruta de la carpeta padre para escanear:');
+      const path = window.prompt(t('projects.promptScanPath'));
       selectedPath = path?.trim() || null;
     }
 
@@ -59,14 +62,12 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
     try {
       const foundCount = await onScanDirectory(selectedPath);
       if (foundCount === 0) {
-        window.alert(
-          'No se detectaron proyectos en esa carpeta. Verifica la ruta y que los proyectos estén hasta 5 niveles de profundidad.',
-        );
+        window.alert(t('projects.scanNoProjects'));
       } else {
-        window.alert(`Se agregaron ${foundCount} proyectos al dashboard.`);
+        window.alert(t('projects.scanAdded', { count: foundCount }));
       }
     } catch (err) {
-      window.alert(`No se pudo escanear la carpeta: ${(err as Error).message}`);
+      window.alert(t('projects.scanError', { message: (err as Error).message }));
     }
   };
 
@@ -76,24 +77,24 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
     onClearingChange(true);
     try {
       const shouldDelete = isTauriRuntime()
-        ? await confirm('Esto borrará TODOS los proyectos y grupos del dashboard. ¿Continuar?', {
-            title: 'Confirmar borrado',
+        ? await confirm(t('projects.confirmClear'), {
+            title: t('projects.confirmClearTitle'),
             kind: 'warning',
-            okLabel: 'Sí, borrar',
-            cancelLabel: 'Cancelar',
+            okLabel: t('projects.okDelete'),
+            cancelLabel: t('projects.cancel'),
           })
-        : window.confirm('Esto borrará TODOS los proyectos y grupos del dashboard. ¿Continuar?');
+        : window.confirm(t('projects.confirmClear'));
       if (!shouldDelete) return;
 
       await onClearAll();
       if (isTauriRuntime()) {
-        await message('Se borraron todos los proyectos y grupos.', {
-          title: 'Borrado completado',
+        await message(t('projects.clearDone'), {
+          title: t('projects.clearDoneTitle'),
           kind: 'info',
-          okLabel: 'OK',
+          okLabel: t('projects.ok'),
         });
       } else {
-        window.alert('Se borraron todos los proyectos y grupos.');
+        window.alert(t('projects.clearDone'));
       }
     } finally {
       onClearingChange(false);
@@ -108,10 +109,10 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
             <Folder className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h2 className="text-2xl font-black uppercase tracking-widest text-foreground">Active Projects</h2>
+            <h2 className="text-2xl font-black uppercase tracking-widest text-foreground">{t('projects.title')}</h2>
             <div className="flex items-center gap-2 mt-1">
               <GlowBadge size="xs" color="blue">
-                {projects.length} DETECTED
+                {projects.length} {t('projects.detected')}
               </GlowBadge>
               {sortLabel ? (
                 <span className="text-[10px] font-bold text-muted-foreground opacity-40 italic">
@@ -129,7 +130,7 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
             onClick={handleScanParentFolder}
           >
             <FolderSearch className="w-4 h-4 group-hover:scale-110 transition-transform" />
-            Scan Parent Folder
+            {t('projects.scanFolder')}
           </NeonButton>
 
           <NeonButton
@@ -138,7 +139,7 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
             onClick={handleAddProject}
           >
             <Plus className="w-4 h-4" />
-            Register Project
+            {t('projects.register')}
           </NeonButton>
 
           <NeonButton
@@ -148,7 +149,7 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
             onClick={handleClearAll}
           >
             <Trash2 className="w-4 h-4" />
-            {isClearing ? 'Borrando...' : 'Borrar Todo'}
+            {isClearing ? t('projects.clearing') : t('projects.clearAll')}
           </NeonButton>
         </div>
       </div>
@@ -188,10 +189,8 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
               <Folder className="w-7 h-7 text-muted-foreground/40" />
             </div>
             <div className="text-center">
-              <h3 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/70">Empty Workspace</h3>
-              <p className="text-[10px] text-muted-foreground/60 mt-1">
-                No projects have been registered in this machine yet.
-              </p>
+              <h3 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/70">{t('projects.emptyTitle')}</h3>
+              <p className="text-[10px] text-muted-foreground/60 mt-1">{t('projects.emptyHint')}</p>
             </div>
           </div>
         )}

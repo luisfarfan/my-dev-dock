@@ -15,4 +15,4 @@ export {
   OpenProjectEditorModal,
   type OpenProjectEditorModalProps,
 } from './components/open-project-editor-modal';
-export { SettingsModal, type SettingsModalProps } from './components/settings-modal';
+export { SettingsDrawer, type SettingsDrawerProps } from './components/settings-drawer';

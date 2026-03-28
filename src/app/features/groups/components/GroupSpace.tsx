@@ -4,6 +4,7 @@ import { GlassCard, GlowBadge, NeonButton } from '@org/ui-kit';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, Folder, Hand, Pencil, Play, Trash2, X } from 'lucide-react';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface GroupSpaceProps {
   group: Group;
@@ -30,6 +31,7 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
   onRemoveProject,
   onLaunch,
 }) => {
+  const { t } = useTranslation();
   const [newName, setNewName] = useState(group.name);
   const { setNodeRef, isOver } = useDroppable({
     id: `group-${group.id}`,
@@ -80,7 +82,7 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
             )}
 
             <GlowBadge size="xs" color="blue" className="shrink-0">
-              {projectsInGroup.length} PROJECTS
+              {projectsInGroup.length} {t('groupSpace.projects')}
             </GlowBadge>
           </div>
 
@@ -150,14 +152,14 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
 
           {projectsInGroup.length === 0 && !isDndActive && (
             <div className="flex items-center gap-2 text-[10px] text-muted-foreground italic opacity-40 py-2">
-              No projects in this group. Click the hand icon to drag projects here.
+              {t('groupSpace.emptyHint')}
             </div>
           )}
 
           {isDndActive && (
             <div className="flex items-center gap-2 border-2 border-dashed border-primary/20 bg-primary/5 rounded-md px-3 py-1 animate-pulse">
               <Hand className="w-3 h-3 text-primary" />
-              <span className="text-[9px] font-black uppercase text-primary/80">Drop Here</span>
+              <span className="text-[9px] font-black uppercase text-primary/80">{t('groupSpace.dropHere')}</span>
             </div>
           )}
         </div>

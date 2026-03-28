@@ -1,0 +1,172 @@
+{
+  "app": {
+    "loading": "Syncing Hub..."
+  },
+  "hub": {
+    "title": "Project Hub",
+    "subtitle": "Central Management & Launchpad",
+    "searchPlaceholder": "Find in workspace...",
+    "viewCompact": "Compact view",
+    "viewDetailed": "Detailed view"
+  },
+  "projects": {
+    "title": "Active Projects",
+    "detected": "DETECTED",
+    "scanFolder": "Scan Parent Folder",
+    "register": "Register Project",
+    "clearAll": "Clear all",
+    "clearing": "Clearing...",
+    "emptyTitle": "Empty Workspace",
+    "emptyHint": "No projects have been registered on this machine yet.",
+    "promptPath": "Enter the local project path:",
+    "promptScanPath": "Enter the parent folder path to scan:",
+    "dialogScanTitle": "Select parent folder to scan",
+    "scanNoProjects": "No projects were found in that folder. Check the path and that projects are within 5 levels deep.",
+    "scanAdded": "Added {{count}} projects to the dashboard.",
+    "scanError": "Could not scan folder: {{message}}",
+    "confirmClear": "This will remove ALL projects and groups from the dashboard. Continue?",
+    "confirmClearTitle": "Confirm deletion",
+    "okDelete": "Yes, delete",
+    "cancel": "Cancel",
+    "clearDone": "All projects and groups were removed.",
+    "clearDoneTitle": "Deletion complete",
+    "ok": "OK"
+  },
+  "groups": {
+    "title": "Smart Groups",
+    "configured": "CONFIGURED",
+    "hint": "Cluster your workspace logically",
+    "newCluster": "New Logical Cluster",
+    "empty": "No launch groups defined",
+    "defaultName": "GROUP {{n}}"
+  },
+  "groupSpace": {
+    "projects": "PROJECTS",
+    "emptyHint": "No projects in this group. Click the hand icon to drag projects here.",
+    "dropHere": "Drop here"
+  },
+  "footer": {
+    "ready": "Ready to Launch",
+    "dropHint": "Drop projects on clusters"
+  },
+  "commandPalette": {
+    "title": "Command Palette",
+    "subtitle": "Quick navigation for global actions.",
+    "openSettings": "Open settings",
+    "settingsPanelHint": "Right panel",
+    "focusSearch": "Focus global search",
+    "searchShortcut": "⌘K → Search",
+    "comingSoon": "Next: shortcuts to register a project and create groups."
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "subtitle": "Global preferences for your local workspace",
+    "closeWindow": "Close window"
+  },
+  "settingsDrawer": {
+    "close": "Close settings panel"
+  },
+  "settingsModal": {
+    "title": "Settings",
+    "subtitle": "Choose the default editor for opening projects.",
+    "defaultEditor": "Default editor",
+    "noIDEs": "No installed IDEs were detected.",
+    "editorNotInstalled": "The current default editor ({{editor}}) is not installed."
+  },
+  "language": {
+    "section": "Language",
+    "hint": "Interface language for Dev Hub.",
+    "es": "Spanish",
+    "en": "English"
+  },
+  "openProject": {
+    "title": "Open project",
+    "subtitle": "Choose an editor to open this project.",
+    "noIDEs": "No installed IDEs were detected."
+  },
+  "sort": {
+    "sectionTitle": "Project order",
+    "sectionHint": "How projects are listed on the dashboard (after search filter).",
+    "direction": "Direction",
+    "desc": "Descending",
+    "asc": "Ascending",
+    "subtitleLine": "Sorted by {{field}} · {{tail}}",
+    "fieldLabels": {
+      "name": "name",
+      "addedAt": "date registered",
+      "lastCommitAt": "last Git commit",
+      "lastOpenedAt": "last opened from hub",
+      "status": "Git status"
+    },
+    "tail": {
+      "nameAsc": "A–Z",
+      "nameDesc": "Z–A",
+      "statusAsc": "clean first",
+      "statusDesc": "action needed first",
+      "dateAsc": "oldest first",
+      "dateDesc": "newest first"
+    },
+    "options": {
+      "lastOpenedAt": { "label": "Last opened", "hint": "From Dev Hub (MRU)" },
+      "lastCommitAt": { "label": "Last Git commit", "hint": "Date of latest commit" },
+      "name": { "label": "Name", "hint": "Alphabetical by folder" },
+      "addedAt": { "label": "Registered", "hint": "When added to the hub" },
+      "status": { "label": "Git status", "hint": "Clean / changes / unpushed" }
+    }
+  },
+  "theme": {
+    "appearance": "Appearance",
+    "appearanceHint": "Global visual theme (Tailwind + CSS variables in <code>styles.css</code>).",
+    "presets": {
+      "neon": {
+        "title": "Neon glass",
+        "hint": "Neon green/blue, glass — current product identity."
+      },
+      "aurora": {
+        "title": "Night aurora",
+        "hint": "Violet/cyan mesh, Aurora UI style (creative premium)."
+      },
+      "oled": {
+        "title": "Minimal OLED",
+        "hint": "True black, restrained accents — OLED / low brightness."
+      },
+      "obsidian": {
+        "title": "Obsidian desk",
+        "hint": "Cool zinc/violet slate — dark SaaS like Linear."
+      },
+      "day": {
+        "title": "Day (slate)",
+        "hint": "Cool light, high contrast — daytime / office."
+      },
+      "dawn": {
+        "title": "Dawn (paper)",
+        "hint": "Warm light, sand tones — less eye strain."
+      }
+    }
+  },
+  "projectCard": {
+    "launch": "Launch",
+    "changes": "+{{count}} CHANGES",
+    "synced": "SYNCED",
+    "status": {
+      "clean": "CLEAN",
+      "uncommitted": "UNCOMMITTED",
+      "unpushed": "UNPUSHED",
+      "error": "ERROR"
+    }
+  },
+  "errors": {
+    "editorUnavailable": "Editor not available: {{editor}}"
+  },
+  "sidebar": {
+    "brand": "DevHub",
+    "nav": {
+      "projects": "Projects",
+      "groups": "Groups",
+      "activity": "Activity",
+      "terminal": "Terminal"
+    },
+    "demoUser": "Luis Farfan",
+    "demoRole": "Developer"
+  }
+}

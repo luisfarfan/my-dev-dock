@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Folder, 
   History, 
@@ -17,16 +18,17 @@ export interface SidebarProps {
 }
 
 const NAV_ITEMS = [
-  { id: 'projects', label: 'Projects', icon: Folder },
-  { id: 'groups', label: 'Groups', icon: Layers },
-  { id: 'activity', label: 'Activity', icon: History },
-  { id: 'terminal', label: 'Terminal', icon: Terminal },
+  { id: 'projects' as const, navKey: 'sidebar.nav.projects', icon: Folder },
+  { id: 'groups' as const, navKey: 'sidebar.nav.groups', icon: Layers },
+  { id: 'activity' as const, navKey: 'sidebar.nav.activity', icon: History },
+  { id: 'terminal' as const, navKey: 'sidebar.nav.terminal', icon: Terminal },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
   activeItem = 'projects', 
   onItemClick 
 }) => {
+  const { t } = useTranslation();
   return (
     <aside className="w-64 h-full flex flex-col bg-muted/60 border-r border-border backdrop-blur-xl transition-all duration-300">
       {/* Brand */}
@@ -35,7 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <Terminal className="text-black w-5 h-5" />
         </div>
         <span className="text-xl font-black tracking-tighter uppercase bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60">
-          DevHub
+          {t('sidebar.brand')}
         </span>
       </div>
 
@@ -44,6 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {NAV_ITEMS.map((item) => (
           <button
             key={item.id}
+            type="button"
             onClick={() => onItemClick?.(item.id)}
             className={`
               group flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200
@@ -55,7 +58,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <div className="flex items-center gap-3">
               <item.icon className={`w-4 h-4 ${activeItem === item.id ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}`} />
-              {item.label}
+              {t(item.navKey)}
             </div>
             {activeItem === item.id && (
               <ChevronRight className="w-3 h-3 text-primary animate-pulse" />
@@ -71,8 +74,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <User className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xs font-bold text-foreground leading-none mb-1">Luis Farfan</span>
-            <span className="text-[10px] text-muted-foreground leading-none">Developer</span>
+            <span className="text-xs font-bold text-foreground leading-none mb-1">{t('sidebar.demoUser')}</span>
+            <span className="text-[10px] text-muted-foreground leading-none">{t('sidebar.demoRole')}</span>
           </div>
         </div>
         

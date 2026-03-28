@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Project } from '@org/models';
 import { GlassCard, NeonButton, GlowBadge } from '@org/ui-kit';
 import {
@@ -110,6 +111,16 @@ function getStackGlow(name: string): string {
   return `#${color}`;
 }
 
+function gitStatusLabel(status: string, t: (key: string) => string): string {
+  if (status === 'clean' || status === 'uncommitted' || status === 'unpushed' || status === 'error') {
+    return t(`projectCard.status.${status}`);
+  }
+  return status.toUpperCase();
+}
+
+/** Max height ~2 rows of stack chips in detail view; extra scrolls inside. */
+const DETAIL_STACK_SCROLL_MAX_H = 'max-h-[4.75rem]';
+
 export const ProjectCard: React.FC<ProjectCardProps> = ({
   project,
   onOpenInEditor,
@@ -117,6 +128,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   compact = false,
   isDraggable = false,
 }) => {
+  const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `project-${project.id}`,
     data: { project, id: project.id },
@@ -155,7 +167,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       <GlassCard
         glow={getGlowColor()}
         className={`group flex w-full min-w-0 transition-all duration-300 border-border/60 bg-muted/20 hover:bg-muted/35 ${
-          compact ? 'flex-col items-center p-2 sm:p-3 gap-1.5 sm:gap-2 text-center' : 'flex-col p-6 h-full'
+          compact
+            ? 'flex-col items-center p-2 sm:p-3 gap-1.5 sm:gap-2 text-center'
+            : 'flex-col overflow-hidden p-6 h-full'
         } ${isDraggable ? 'ring-2 ring-primary/20 bg-primary/[0.02]' : ''}`}
         hoverable
         onClick={() => onOpenInEditor(project.path)}
@@ -189,23 +203,26 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               className={
                 compact
                   ? 'flex w-full min-w-0 flex-col items-center justify-center text-center'
-                  : 'min-w-0'
+                  : 'min-w-0 flex-1 w-full text-left'
               }
             >
-              <h3
-                className={
-                  compact
-                    ? 'w-full min-w-0 text-center text-[10px] font-black uppercase tracking-tight group-hover:text-foreground transition-colors line-clamp-2 break-words'
-                    : 'text-lg font-bold group-hover:text-foreground transition-colors flex items-center gap-2 truncate max-w-full'
-                }
-              >
-                {project.name}
-                {!compact && (
-                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-40 transition-opacity" />
-                )}
-              </h3>
+              {compact ? (
+                <h3 className="w-full min-w-0 text-center text-[10px] font-black uppercase tracking-tight group-hover:text-foreground transition-colors line-clamp-2 break-words">
+                  {project.name}
+                </h3>
+              ) : (
+                <div className="flex min-w-0 w-full items-start gap-2">
+                  <h3 className="min-w-0 flex-1 text-lg font-bold leading-snug text-foreground group-hover:text-foreground transition-colors line-clamp-2 break-words">
+                    {project.name}
+                  </h3>
+                  <ArrowUpRight className="mt-1 h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-40" />
+                </div>
+              )}
               {!compact && (
-                <p className="text-[10px] font-mono text-muted-foreground/60 transition-colors group-hover:text-muted-foreground truncate max-w-[150px]">
+                <p
+                  className="mt-1 text-left text-[10px] font-mono leading-snug text-muted-foreground/60 transition-colors group-hover:text-muted-foreground line-clamp-3 break-all"
+                  title={project.path}
+                >
                   {project.path}
                 </p>
               )}
@@ -215,7 +232,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           {compact && (
             <div className="flex w-full flex-col items-center justify-center gap-2">
               <GlowBadge color={getGlowColor()} size="xs" className="scale-75">
-                {project.git.status.toUpperCase()}
+                {gitStatusLabel(project.git.status, t)}
               </GlowBadge>
               <div className="flex gap-1 mt-1">
                 {project.stack.slice(0, 3).map((s) => (
@@ -236,80 +253,92 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           )}
 
           {!compact && (
-            <GlowBadge color={getGlowColor()} size="xs" pulse={project.git.status !== 'clean'}>
-              {project.git.status.toUpperCase()}
-            </GlowBadge>
+            <div className="shrink-0 self-start pt-0.5">
+              <GlowBadge color={getGlowColor()} size="xs" pulse={project.git.status !== 'clean'}>
+                {gitStatusLabel(project.git.status, t)}
+              </GlowBadge>
+            </div>
           )}
         </div>
 
         {!compact && (
           <>
-            <div className="flex flex-col gap-3 py-4 border-y border-border mb-6">
-              <div className="flex items-center justify-between text-[11px] font-bold tracking-tight">
-                <div className="flex items-center gap-2 text-muted-foreground italic">
-                  <GitBranch className="w-3.5 h-3.5" />
-                  {project.git.branch}
+            <div className="flex min-w-0 flex-col gap-3 border-y border-border py-4 mb-4">
+              <div className="flex min-w-0 items-center justify-between gap-3 text-[11px] font-bold tracking-tight">
+                <div className="flex min-w-0 flex-1 items-center gap-2 text-muted-foreground italic">
+                  <GitBranch className="h-3.5 w-3.5 shrink-0" />
+                  <span className="min-w-0 truncate" title={project.git.branch}>
+                    {project.git.branch}
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <History className="w-3 h-3" />
-                  {project.git.changesCount > 0 ? `+${project.git.changesCount} CHANGES` : 'SYNCED'}
+                <div className="flex shrink-0 items-center gap-1.5 text-muted-foreground">
+                  <History className="h-3 w-3 shrink-0" />
+                  <span className="whitespace-nowrap">
+                    {project.git.changesCount > 0
+                      ? t('projectCard.changes', { count: project.git.changesCount })
+                      : t('projectCard.synced')}
+                  </span>
                 </div>
               </div>
               <div className="flex items-start gap-2 p-2 rounded-lg bg-muted/40 border border-border h-10 overflow-hidden">
-                <GitCommit className="w-3.5 h-3.5 text-primary/40 flex-shrink-0 mt-0.5" />
+                <GitCommit className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary/40" />
                 <span className="text-[10px] text-muted-foreground leading-tight italic line-clamp-2">
                   {project.git.lastCommit}
                 </span>
               </div>
             </div>
 
-            <div className="mt-auto flex items-center justify-between pt-2">
-              <div className="flex gap-1.5">
-                {project.stack.map((s) => (
-                  <div
-                    key={s}
-                    className="w-8 h-8 rounded-lg bg-card border border-border flex items-center justify-center p-2 hover:scale-125 hover:z-10 transition-all group/stack ring-1 ring-border/30"
-                    style={{
-                      boxShadow: `0 0 10px ${getStackGlow(s)}33`,
-                    }}
-                  >
-                    <StackIcon name={s} />
-                  </div>
-                ))}
+            <div className="mt-auto flex min-w-0 flex-col gap-3 pt-1">
+              <div
+                className={`min-w-0 w-full ${DETAIL_STACK_SCROLL_MAX_H} overflow-y-auto overflow-x-hidden pr-0.5 [scrollbar-width:thin]`}
+              >
+                <div className="flex flex-wrap content-start gap-1.5">
+                  {project.stack.map((s) => (
+                    <div
+                      key={s}
+                      className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-card p-1 ring-1 ring-border/30 transition-colors group/stack hover:border-primary/35 hover:ring-primary/20"
+                      style={{
+                        boxShadow: `0 0 8px ${getStackGlow(s)}28`,
+                      }}
+                    >
+                      <StackIcon name={s} className="h-full w-full" />
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="flex gap-1.5 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+              <div className="flex w-full min-w-0 justify-end gap-1.5 opacity-0 translate-y-2 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
                 <NeonButton
                   variant="ghost"
                   size="icon"
-                  className="w-8 h-8 group-hover:text-primary"
+                  className="h-8 w-8 shrink-0 group-hover:text-primary"
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
                 >
-                  <Share2 className="w-4 h-4" />
+                  <Share2 className="h-4 w-4" />
                 </NeonButton>
                 <NeonButton
                   variant="ghost"
                   size="icon"
-                  className="w-8 h-8 text-neon-red/40 hover:text-neon-red"
+                  className="h-8 w-8 shrink-0 text-neon-red/40 hover:text-neon-red"
                   onClick={(e) => {
                     e.stopPropagation();
                     onRemove(project.id);
                   }}
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="h-4 w-4" />
                 </NeonButton>
                 <NeonButton
                   variant="outline"
                   size="sm"
-                  className="text-[10px] h-8 px-4 font-black tracking-widest uppercase hover:border-primary/50"
+                  className="h-8 shrink-0 px-4 text-[10px] font-black uppercase tracking-widest hover:border-primary/50"
                   onClick={(e) => {
                     e.stopPropagation();
                     onOpenInEditor(project.path);
                   }}
                 >
-                  Lanzar
+                  {t('projectCard.launch')}
                 </NeonButton>
               </div>
             </div>

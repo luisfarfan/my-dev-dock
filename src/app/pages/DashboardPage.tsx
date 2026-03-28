@@ -8,15 +8,21 @@ import {
   DashboardProjectsSection,
   DashboardSectionSeparator,
   OpenProjectEditorModal,
-  SettingsModal,
+  SettingsDrawer,
   useDashboard,
 } from '@/app/features/dashboard';
-import { isTauriRuntime } from '@/app/shared/utils/is-tauri-runtime';
+import { useSettingsDrawerStore } from '@/app/store/use-settings-drawer-store';
 
-export const DashboardPage: React.FC = () => {
+export interface DashboardPageProps {
+  onOpenSettings: () => Promise<void>;
+}
+
+export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) => {
   const [isClearing, setIsClearing] = React.useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   const [projectPathForEditorPicker, setProjectPathForEditorPicker] = React.useState<string | null>(null);
+
+  const settingsDrawerOpen = useSettingsDrawerStore((s) => s.isOpen);
+  const closeSettingsDrawer = useSettingsDrawerStore((s) => s.close);
 
   const {
     projects,
@@ -40,7 +46,6 @@ export const DashboardPage: React.FC = () => {
     editingGroupId,
     setEditingGroupId,
     fetchInstalledEditors,
-    openSettingsWindow,
     setDefaultEditor,
     scanDirectory,
     projectSortLabel,
@@ -78,15 +83,6 @@ export const DashboardPage: React.FC = () => {
     setProjectPathForEditorPicker(null);
   };
 
-  const handleOpenSettings = async () => {
-    if (isTauriRuntime()) {
-      await openSettingsWindow();
-      return;
-    }
-    setIsSettingsOpen(true);
-    await fetchInstalledEditors();
-  };
-
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="flex flex-col gap-16 max-w-[1400px] mx-auto pb-20">
@@ -95,7 +91,7 @@ export const DashboardPage: React.FC = () => {
           onSearchChange={setSearchQuery}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
-          onOpenSettings={handleOpenSettings}
+          onOpenSettings={onOpenSettings}
         />
 
         <DashboardProjectsSection
@@ -128,9 +124,9 @@ export const DashboardPage: React.FC = () => {
         <DashboardFooter />
       </div>
 
-      <SettingsModal
-        open={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
+      <SettingsDrawer
+        open={settingsDrawerOpen}
+        onClose={closeSettingsDrawer}
         installedEditors={installedEditors}
         settings={settings}
         onSelectDefaultEditor={(editor) => setDefaultEditor(editor)}
