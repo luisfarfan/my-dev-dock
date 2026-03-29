@@ -130,6 +130,33 @@ No hay generadores Nx: crea archivos a mano siguiendo la estructura existente.
 
 ---
 
+## Versionado y releases (Conventional Commits)
+
+El repo usa **[semantic-release](https://github.com/semantic-release/semantic-release)** en GitHub Actions (`.github/workflows/release.yml`) para calcular la próxima versión **SemVer** a partir del historial de commits en `master`.
+
+### Formato de mensajes
+
+| Prefijo / cuerpo | Bump típico |
+|------------------|-------------|
+| `fix: …` | *patch* |
+| `feat: …` | *minor* |
+| `BREAKING CHANGE:` en el cuerpo, o `feat!:` / `fix!:` | *major* |
+
+Ejemplos: `fix: correct group launch persistence`, `feat: add Raycast script cleanup`.
+
+### Qué ocurre al hacer push a `master`
+
+1. **Semantic release**: actualiza `CHANGELOG.md`, sincroniza la versión en `package.json`, `src-tauri/tauri.conf.json` y `src-tauri/Cargo.toml` (vía `scripts/sync-version.mjs`), crea el tag `vX.Y.Z` y publica la **GitHub Release** con notas.
+2. El commit de release incluye `[skip ci]` para no relanzar el workflow de versionado en bucle.
+3. **Tauri build** (`.github/workflows/tauri-artifacts.yml`): al existir el tag `v*`, se compila en macOS, Linux y Windows y se suben los instaladores al mismo release (puede tardar varios minutos).
+
+### Local
+
+- Sincronizar versión manualmente (poco habitual): `bun run sync-version -- 0.2.0` (requiere argumento SemVer).
+- Probar release en seco (requiere `GITHUB_TOKEN`): `bunx semantic-release --dry-run`.
+
+---
+
 ## ⚠️ Problemas comunes
 
 | Problema | Solución |

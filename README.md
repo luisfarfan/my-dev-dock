@@ -95,6 +95,7 @@ cd src-tauri && cargo check
 - **Index**: [`docs/README.md`](docs/README.md)
 - **AI / agents quick brief**: [`docs/00-ai-brief.md`](docs/00-ai-brief.md)
 - **Editor rules**: [`AGENTS.md`](AGENTS.md), [`CLAUDE.md`](CLAUDE.md)
+- **Versioning & automated releases** (Conventional Commits, CI): [`docs/09-development-guide.md`](docs/09-development-guide.md#versionado-y-releases-conventional-commits)
 
 ## License
 
