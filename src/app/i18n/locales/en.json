@@ -40,6 +40,13 @@
     "empty": "No launch groups defined",
     "defaultName": "GROUP {{n}}"
   },
+  "layoutOrder": {
+    "title": "Section order",
+    "groupsFirst": "Showing groups first, then projects",
+    "projectsFirst": "Showing projects first, then groups",
+    "ctaGroupsFirst": "Move groups up",
+    "ctaProjectsFirst": "Move projects up"
+  },
   "groupSpace": {
     "projects": "PROJECTS",
     "emptyHint": "No projects in this group. Click the hand icon to drag projects here.",
@@ -157,6 +164,48 @@
   },
   "errors": {
     "editorUnavailable": "Editor not available: {{editor}}"
+  },
+  "raycast": {
+    "settings": {
+      "title": "Raycast Script Commands",
+      "hint": "Set the folder Raycast already uses for scripts. Dev Hub will create launchers there.",
+      "refresh": "Refresh",
+      "statusUnknown": "Raycast status not checked yet.",
+      "detected": "Raycast detected on this system.",
+      "notDetected": "Raycast not detected (you can still export if your scripts folder is configured).",
+      "pathNotSet": "No scripts folder configured.",
+      "chooseFolder": "Choose folder",
+      "picking": "Selecting...",
+      "clear": "Clear",
+      "pickTitle": "Select your Raycast Script Commands folder",
+      "promptPath": "Enter the Raycast scripts folder path:"
+    },
+    "form": {
+      "title": "Create Raycast launcher",
+      "subtitleProject": "Project: {{name}}",
+      "subtitleGroup": "Group: {{name}}",
+      "pathMissing": "You need to configure the Raycast scripts folder in Settings first.",
+      "openSettings": "Open settings",
+      "pathLabel": "Destination folder",
+      "launcherNameLabel": "Visible name in Raycast",
+      "launcherName": "Launcher name (title)",
+      "launcherNameHelp": "This is the text shown in Raycast search results.",
+      "fileNameLabel": "Script file name",
+      "fileName": "File name (slug)",
+      "fileNameHelp": "Used to create the .sh file. Letters, numbers, and dashes only.",
+      "iconLabel": "Raycast icon",
+      "icon": "Raycast icon",
+      "iconHelp": "Pick a visual icon for this launcher.",
+      "editorLabel": "Editor to open with",
+      "editorHelp": "Editor this launcher will use when executed.",
+      "keywordsLabel": "Keywords",
+      "keywords": "Comma-separated keywords",
+      "keywordsHelp": "Helps users find the command faster in Raycast.",
+      "cancel": "Cancel",
+      "create": "Create script",
+      "creating": "Creating...",
+      "required": "Please fill launcher name and file name."
+    }
   },
   "sidebar": {
     "brand": "DevHub",

@@ -99,4 +99,22 @@ export interface AppSettings {
   /** May include legacy `lastCommit` from older persisted state */
   sortBy: SortField | 'lastCommit';
   sortDirection: 'asc' | 'desc';
+  raycastScriptsPath?: string;
+}
+
+export type RaycastLauncherTargetType = 'project' | 'group';
+
+export interface RaycastLauncherInput {
+  targetType: RaycastLauncherTargetType;
+  targetId: string;
+  title: string;
+  filename: string;
+  icon?: string;
+  keywords?: string[];
+  editor?: EditorType;
+}
+
+export interface RaycastLauncherResult {
+  filePath: string;
+  overwritten: boolean;
 }

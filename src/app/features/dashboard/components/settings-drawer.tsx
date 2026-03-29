@@ -11,8 +11,10 @@ export interface SettingsDrawerProps {
   onClose: () => void;
   installedEditors: EditorType[];
   settings: AppSettings | null;
+  raycastInstalled: boolean | null;
   onSelectDefaultEditor: (editor: EditorType) => void;
   onPatchSettings: (partial: Partial<AppSettings>) => void;
+  onRefreshRaycastStatus: () => Promise<void>;
 }
 
 export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
@@ -20,8 +22,10 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   onClose,
   installedEditors,
   settings,
+  raycastInstalled,
   onSelectDefaultEditor,
   onPatchSettings,
+  onRefreshRaycastStatus,
 }) => {
   const { t } = useTranslation();
 
@@ -75,8 +79,10 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
               <SettingsPanelBody
                 installedEditors={installedEditors}
                 settings={settings}
+                raycastInstalled={raycastInstalled}
                 onSelectDefaultEditor={onSelectDefaultEditor}
                 onPatchSettings={onPatchSettings}
+                onRefreshRaycastStatus={onRefreshRaycastStatus}
               />
             </div>
           </motion.aside>

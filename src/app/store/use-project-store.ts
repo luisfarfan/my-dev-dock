@@ -1,4 +1,11 @@
-import { AppSettings, EditorType, Group, Project } from '@org/models';
+import {
+  AppSettings,
+  EditorType,
+  Group,
+  Project,
+  RaycastLauncherInput,
+  RaycastLauncherResult,
+} from '@org/models';
 import { getProjectService, getSettingsService } from '@org/services';
 import i18n from '@/app/i18n/i18n';
 import { broadcastAppSettingsChanged } from '@/lib/tauri-multi-window-sync';
@@ -15,10 +22,12 @@ interface ProjectState {
   // Actions
   fetchData: () => Promise<void>;
   fetchInstalledEditors: () => Promise<void>;
+  detectRaycastInstallation: () => Promise<boolean>;
   refreshSettingsFromBackend: () => Promise<void>;
   setDefaultEditor: (editor: EditorType) => Promise<void>;
   patchSettings: (partial: Partial<AppSettings>) => Promise<void>;
   openProjectWithEditor: (path: string, editor: EditorType) => Promise<void>;
+  exportRaycastLauncher: (input: RaycastLauncherInput) => Promise<RaycastLauncherResult>;
   scanDirectory: (path: string) => Promise<number>;
   registerProject: (path: string) => Promise<void>;
 
@@ -74,6 +83,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       set({ installedEditors });
     } catch (err) {
       set({ error: (err as Error).message });
+    }
+  },
+
+  detectRaycastInstallation: async () => {
+    try {
+      return await projectService.detectRaycastInstallation();
+    } catch (err) {
+      set({ error: (err as Error).message });
+      return false;
     }
   },
 
@@ -171,6 +189,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       } catch {
         /* ignore */
       }
+    } catch (err) {
+      set({ error: (err as Error).message });
+      throw err;
+    }
+  },
+
+  exportRaycastLauncher: async (input) => {
+    try {
+      return await projectService.exportRaycastLauncher(input);
     } catch (err) {
       set({ error: (err as Error).message });
       throw err;

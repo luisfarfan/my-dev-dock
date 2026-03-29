@@ -28,6 +28,7 @@
 
 5. **Settings** (`get_settings` / `update_settings`)
    - Default editor, git poll interval (stored; wiring may vary), launch delay, **`sortBy`** / **`sortDirection`** (e.g. `lastOpenedAt`, `lastCommitAt`, `name`, `addedAt`, `status`).
+   - Raycast integration settings: **`raycastScriptsPath`** (user-selected Script Commands folder).
    - Frontend applies sort in [`src/app/features/dashboard/hooks/use-dashboard.ts`](../src/app/features/dashboard/hooks/use-dashboard.ts) via [`src/lib/project-sort.ts`](../src/lib/project-sort.ts).
 
 6. **Groups**
@@ -37,14 +38,22 @@
    - Multiple visual themes: `data-theme` on `<html>`, Zustand store [`src/app/store/use-ui-theme-store.ts`](../src/app/store/use-ui-theme-store.ts), tokens in [`src/styles.css`](../src/styles.css).
    - **Cross-window sync** (Tauri): [`src/lib/tauri-multi-window-sync.ts`](../src/lib/tauri-multi-window-sync.ts) + listeners in [`src/app/app.tsx`](../src/app/app.tsx).
 
-8. **i18n**
+8. **Raycast launchers**
+   - User configures Script Commands folder once in settings.
+   - Hub can export `.sh` launchers for:
+     - single project (open in selected/default editor),
+     - group (open all projects with configured launch delay).
+   - Launcher metadata is configurable from UI (title, filename slug, icon preset, keywords).
+   - Commands: `detect_raycast_installation`, `export_raycast_launcher`.
+
+9. **i18n**
    - `react-i18next` used in dashboard, cards, command palette, settings-related UI.
 
 ## Tauri commands (Rust → frontend)
 
 Registered in `src-tauri/src/lib.rs` `generate_handler!`:
 
-`get_projects`, `get_groups`, `get_settings`, `update_settings`, `scan_directory`, `register_project`, `remove_project`, `get_installed_editors`, `open_in_editor`, `launch_project`, `launch_group`, `sync_project`, `create_group`, `update_group`, `delete_group`, `clear_all`.
+`get_projects`, `get_groups`, `get_settings`, `update_settings`, `scan_directory`, `register_project`, `remove_project`, `get_installed_editors`, `open_in_editor`, `launch_project`, `launch_group`, `sync_project`, `create_group`, `update_group`, `delete_group`, `clear_all`, `detect_raycast_installation`, `export_raycast_launcher`.
 
 Frontend must use **`src/lib/services/`** (`tauri.ts` / `mock.ts`), not raw `invoke()` in components.
 

@@ -13,9 +13,11 @@ export function useDashboard() {
     isLoading, 
     fetchData, 
     fetchInstalledEditors,
+    detectRaycastInstallation,
     setDefaultEditor,
     patchSettings,
     openProjectWithEditor,
+    exportRaycastLauncher,
     scanDirectory,
     openProject,
 
@@ -73,8 +75,10 @@ export function useDashboard() {
     clearAll,
     fetchData,
     fetchInstalledEditors,
+    detectRaycastInstallation,
     setDefaultEditor,
     patchSettings,
+    exportRaycastLauncher,
 
     createGroup,
     updateGroup,

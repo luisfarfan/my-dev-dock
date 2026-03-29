@@ -1,4 +1,11 @@
-import { Project, Group, AppSettings, EditorType } from '@org/models';
+import {
+  Project,
+  Group,
+  AppSettings,
+  EditorType,
+  RaycastLauncherInput,
+  RaycastLauncherResult,
+} from '@org/models';
 
 /**
  * Interface that all implementations of the project service must follow.
@@ -19,6 +26,8 @@ export interface ProjectService {
   launchProject(path: string): Promise<void>;
   launchGroup(groupId: string): Promise<void>;
   syncProject(id: string): Promise<Project>;
+  detectRaycastInstallation(): Promise<boolean>;
+  exportRaycastLauncher(input: RaycastLauncherInput): Promise<RaycastLauncherResult>;
 }
 
 export interface SettingsService {

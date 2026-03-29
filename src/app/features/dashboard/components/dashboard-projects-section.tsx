@@ -19,6 +19,7 @@ export interface DashboardProjectsSectionProps {
   onScanDirectory: (path: string) => Promise<number>;
   onClearAll: () => Promise<void>;
   onOpenInEditor: (path: string) => void;
+  onCreateRaycastLauncher: (project: Project) => void;
 }
 
 export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> = ({
@@ -32,6 +33,7 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
   onScanDirectory,
   onClearAll,
   onOpenInEditor,
+  onCreateRaycastLauncher,
 }) => {
   const { t } = useTranslation();
 
@@ -176,6 +178,7 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
                 project={project}
                 onRemove={onRemoveProject}
                 onOpenInEditor={onOpenInEditor}
+                onCreateRaycastLauncher={onCreateRaycastLauncher}
                 compact={viewMode === 'grid'}
                 isDraggable={true}
               />

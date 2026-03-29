@@ -2,7 +2,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { Group, Project } from '@org/models';
 import { GlassCard, GlowBadge, NeonButton } from '@org/ui-kit';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, Folder, Hand, Pencil, Play, Trash2, X } from 'lucide-react';
+import { Check, Command, Folder, Hand, Pencil, Play, Trash2, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,6 +17,7 @@ export interface GroupSpaceProps {
   onDndToggle: () => void;
   onRemoveProject: (projectId: string) => void;
   onLaunch: () => void;
+  onCreateRaycastLauncher?: () => void;
 }
 
 export const GroupSpace: React.FC<GroupSpaceProps> = ({
@@ -30,6 +31,7 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
   onDndToggle,
   onRemoveProject,
   onLaunch,
+  onCreateRaycastLauncher,
 }) => {
   const { t } = useTranslation();
   const [newName, setNewName] = useState(group.name);
@@ -50,75 +52,99 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
       className={`relative transition-all duration-500 ${isOver ? 'scale-[1.02]' : ''}`}
     >
       <GlassCard
+        glow={isDndActive ? 'green' : 'blue'}
+        hoverable
         className={`p-6 border-border/80 bg-muted/25 flex flex-col gap-4 min-h-[160px] ${
           isDndActive ? 'border-primary/40 shadow-[0_0_20px_rgba(0,255,136,0.1)]' : ''
-        } ${isOver ? 'bg-primary/5 border-primary/40' : ''}`}
+        } ${isOver ? 'bg-primary/5 border-primary/40' : ''} group`}
       >
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            {isEditingName ? (
-              <div className="flex items-center gap-1 flex-1">
-                <input
-                  autoFocus
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  className="bg-input border border-border rounded px-2 py-1 text-sm font-black text-primary focus:outline-none focus:border-primary/50 w-full"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleRename();
-                    if (e.key === 'Escape') onEditToggle();
-                  }}
-                />
-                <button onClick={handleRename} className="p-1 hover:text-primary transition-colors">
-                  <Check className="w-4 h-4" />
-                </button>
-                <button onClick={onEditToggle} className="p-1 hover:text-neon-red transition-colors">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <h3 className="text-sm font-black uppercase tracking-[0.2em] text-foreground/90 truncate">
-                {group.name}
-              </h3>
-            )}
+        <div className="flex flex-col gap-2.5">
+          <div className="flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              {isEditingName ? (
+                <div className="flex items-center gap-1">
+                  <input
+                    autoFocus
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    className="bg-input border border-border rounded px-2 py-1 text-sm font-black text-primary focus:outline-none focus:border-primary/50 w-full"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleRename();
+                      if (e.key === 'Escape') onEditToggle();
+                    }}
+                  />
+                  <button onClick={handleRename} className="p-1 hover:text-primary transition-colors">
+                    <Check className="w-4 h-4" />
+                  </button>
+                  <button onClick={onEditToggle} className="p-1 hover:text-neon-red transition-colors">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <h3
+                  className="truncate text-sm font-black uppercase tracking-[0.14em] text-foreground transition-colors group-hover:text-foreground"
+                  title={group.name}
+                >
+                  {group.name}
+                </h3>
+              )}
+            </div>
+            <NeonButton variant="primary" size="icon" className="h-8 w-8 shrink-0" onClick={onLaunch}>
+              <Play className="w-3.5 h-3.5 fill-current" />
+            </NeonButton>
+          </div>
 
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <GlowBadge size="xs" color="blue" className="shrink-0">
               {projectsInGroup.length} {t('groupSpace.projects')}
             </GlowBadge>
-          </div>
 
-          <div className="flex items-center gap-1 shrink-0">
-            <NeonButton
-              variant="ghost"
-              size="icon"
-              className={`w-8 h-8 ${isEditingName ? 'text-primary' : 'text-muted-foreground'}`}
-              onClick={onEditToggle}
-            >
-              <Pencil className="w-3.5 h-3.5" />
-            </NeonButton>
+            <div className="flex items-center gap-1 shrink-0">
+              <div className="group/raycast relative">
+                <NeonButton
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-primary"
+                  title={t('raycast.form.title')}
+                  aria-label={t('raycast.form.title')}
+                  onClick={onCreateRaycastLauncher}
+                >
+                  <Command className="w-3.5 h-3.5" />
+                </NeonButton>
+                <span className="pointer-events-none absolute bottom-full left-1/2 z-40 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-border bg-popover px-2 py-1 text-[10px] font-bold text-foreground opacity-0 shadow-lg transition-opacity duration-200 group-hover/raycast:opacity-100">
+                  {t('raycast.form.title')}
+                </span>
+              </div>
 
-            <NeonButton
-              variant="ghost"
-              size="icon"
-              className={`w-8 h-8 ${isDndActive ? 'text-primary bg-primary/10' : 'text-muted-foreground'}`}
-              onClick={onDndToggle}
-            >
-              <Hand className="w-3.5 h-3.5" />
-            </NeonButton>
+              <div className="mx-1 h-4 w-px bg-border" />
 
-            <NeonButton
-              variant="ghost"
-              size="icon"
-              className="w-8 h-8 text-muted-foreground hover:text-neon-red"
-              onClick={onDelete}
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </NeonButton>
+              <NeonButton
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${isEditingName ? 'text-primary' : 'text-muted-foreground'}`}
+                onClick={onEditToggle}
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </NeonButton>
 
-            <div className="w-px h-4 bg-border mx-1" />
+              <NeonButton
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${isDndActive ? 'text-primary bg-primary/10' : 'text-muted-foreground'}`}
+                onClick={onDndToggle}
+              >
+                <Hand className="w-3.5 h-3.5" />
+              </NeonButton>
 
-            <NeonButton variant="primary" size="icon" className="w-8 h-8" onClick={onLaunch}>
-              <Play className="w-3.5 h-3.5 fill-current" />
-            </NeonButton>
+              <NeonButton
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-neon-red"
+                onClick={onDelete}
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </NeonButton>
+            </div>
           </div>
         </div>
 
@@ -166,7 +192,7 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
       </GlassCard>
 
       {isOver && (
-        <div className="absolute inset-0 bg-primary/10 rounded-[0.75rem] border-2 border-primary animate-pulse pointer-events-none z-10" />
+        <div className="absolute inset-0 z-10 animate-pulse rounded-xl border-2 border-primary bg-primary/10 pointer-events-none" />
       )}
     </div>
   );

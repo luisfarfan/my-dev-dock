@@ -1,5 +1,12 @@
 import { invoke } from '@tauri-apps/api/core';
-import { Project, Group, AppSettings, EditorType } from '@org/models';
+import {
+  Project,
+  Group,
+  AppSettings,
+  EditorType,
+  RaycastLauncherInput,
+  RaycastLauncherResult,
+} from '@org/models';
 import { ProjectService, SettingsService } from './interfaces';
 
 export class TauriProjectService implements ProjectService {
@@ -57,6 +64,14 @@ export class TauriProjectService implements ProjectService {
 
   async syncProject(id: string): Promise<Project> {
     return await invoke<Project>('sync_project', { id });
+  }
+
+  async detectRaycastInstallation(): Promise<boolean> {
+    return invoke<boolean>('detect_raycast_installation');
+  }
+
+  async exportRaycastLauncher(input: RaycastLauncherInput): Promise<RaycastLauncherResult> {
+    return invoke<RaycastLauncherResult>('export_raycast_launcher', { input });
   }
 }
 

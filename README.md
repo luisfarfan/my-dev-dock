@@ -13,6 +13,7 @@ Desktop app for developers who juggle many local repositories. **Tauri v2** + **
 | **Editors** | Open project path in Cursor, VS Code, Zed, WebStorm, Sublime, Neovim, Antigravity; default editor + per-launch picker. **Probable editor** hint from `.cursor`, `.vscode`, etc. |
 | **Usage sort** | **`lastOpenedAt`** when opened from the hub; sort also by name, date added, **Git commit time**, Git status. Settings persisted in Rust JSON state. |
 | **Groups** | Create groups, assign projects (incl. drag-and-drop), **launch all** with configurable delay. |
+| **Raycast** | Configure Script Commands folder once, then generate `.sh` launchers per **project** or **group** directly from the UI. |
 | **UI** | Neon / glass aesthetic; **multiple UI themes** (`data-theme` + CSS variables in `src/styles.css`). **i18n** via `react-i18next`. |
 | **Multi-window** | Separate settings UI path; **Tauri events** sync **theme** and **app settings** across webviews instantly. |
 | **Persistence** | Single JSON file under the app data directory (projects, groups, settings). |

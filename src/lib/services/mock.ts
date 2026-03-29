@@ -1,4 +1,11 @@
-import { Project, Group, AppSettings, EditorType } from '@org/models';
+import {
+  Project,
+  Group,
+  AppSettings,
+  EditorType,
+  RaycastLauncherInput,
+  RaycastLauncherResult,
+} from '@org/models';
 import { ProjectService, SettingsService } from './interfaces';
 
 const MOCK_PROJECTS: Project[] = [
@@ -63,6 +70,7 @@ const MOCK_SETTINGS: AppSettings = {
   launchDelay: 1000,
   sortBy: 'lastOpenedAt',
   sortDirection: 'desc',
+  raycastScriptsPath: '',
 };
 
 export class MockProjectService implements ProjectService {
@@ -180,6 +188,20 @@ export class MockProjectService implements ProjectService {
     const project = MOCK_PROJECTS.find((p) => p.id === id);
     if (!project) throw new Error('Project not found');
     return project;
+  }
+
+  async detectRaycastInstallation(): Promise<boolean> {
+    return true;
+  }
+
+  async exportRaycastLauncher(input: RaycastLauncherInput): Promise<RaycastLauncherResult> {
+    if (!MOCK_SETTINGS.raycastScriptsPath) {
+      throw new Error('Raycast scripts path is not configured');
+    }
+    return {
+      filePath: `${MOCK_SETTINGS.raycastScriptsPath}/${input.filename}.sh`,
+      overwritten: false,
+    };
   }
 }
 

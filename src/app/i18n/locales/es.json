@@ -40,6 +40,13 @@
     "empty": "Sin grupos de lanzamiento",
     "defaultName": "GRUPO {{n}}"
   },
+  "layoutOrder": {
+    "title": "Orden de secciones",
+    "groupsFirst": "Mostrando primero grupos y luego proyectos",
+    "projectsFirst": "Mostrando primero proyectos y luego grupos",
+    "ctaGroupsFirst": "Subir grupos",
+    "ctaProjectsFirst": "Subir proyectos"
+  },
   "groupSpace": {
     "projects": "PROYECTOS",
     "emptyHint": "No hay proyectos en este grupo. Pulsa la mano para arrastrar proyectos aquí.",
@@ -157,6 +164,48 @@
   },
   "errors": {
     "editorUnavailable": "Editor no disponible: {{editor}}"
+  },
+  "raycast": {
+    "settings": {
+      "title": "Raycast Script Commands",
+      "hint": "Configura la carpeta que Raycast ya usa para scripts. Dev Hub creará launchers allí.",
+      "refresh": "Revisar",
+      "statusUnknown": "Estado de Raycast no verificado.",
+      "detected": "Raycast detectado en el sistema.",
+      "notDetected": "Raycast no detectado (puedes exportar igual si ya configuraste scripts).",
+      "pathNotSet": "No hay carpeta de scripts configurada.",
+      "chooseFolder": "Elegir carpeta",
+      "picking": "Seleccionando...",
+      "clear": "Limpiar",
+      "pickTitle": "Selecciona la carpeta de Script Commands de Raycast",
+      "promptPath": "Ingresa la ruta de la carpeta de scripts de Raycast:"
+    },
+    "form": {
+      "title": "Crear launcher para Raycast",
+      "subtitleProject": "Proyecto: {{name}}",
+      "subtitleGroup": "Grupo: {{name}}",
+      "pathMissing": "Primero debes configurar la carpeta de scripts de Raycast en Ajustes.",
+      "openSettings": "Abrir ajustes",
+      "pathLabel": "Carpeta destino",
+      "launcherNameLabel": "Nombre visible en Raycast",
+      "launcherName": "Nombre del launcher (title)",
+      "launcherNameHelp": "Es el texto que aparecerá en el buscador de Raycast.",
+      "fileNameLabel": "Nombre de archivo del script",
+      "fileName": "Nombre del archivo (slug)",
+      "fileNameHelp": "Se usa para crear el .sh. Solo letras, números y guiones.",
+      "iconLabel": "Icono de Raycast",
+      "icon": "Icono Raycast",
+      "iconHelp": "Elige un icono visual para este launcher.",
+      "editorLabel": "Editor a abrir",
+      "editorHelp": "Editor que usará este launcher al ejecutarse.",
+      "keywordsLabel": "Palabras clave",
+      "keywords": "Keywords separadas por coma",
+      "keywordsHelp": "Ayudan a encontrar el comando más rápido en Raycast.",
+      "cancel": "Cancelar",
+      "create": "Crear script",
+      "creating": "Creando...",
+      "required": "Completa nombre y archivo."
+    }
   },
   "sidebar": {
     "brand": "DevHub",

@@ -16,6 +16,7 @@ export interface DashboardGroupsSectionProps {
   onDeleteGroup: (groupId: string) => void;
   onRemoveProjectFromGroup: (groupId: string, projectId: string) => void;
   onLaunchGroup: (groupId: string) => void;
+  onCreateRaycastLauncher: (group: Group) => void;
 }
 
 export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
@@ -28,6 +29,7 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
   onDeleteGroup,
   onRemoveProjectFromGroup,
   onLaunchGroup,
+  onCreateRaycastLauncher,
 }) => {
   const { t } = useTranslation();
   return (
@@ -39,11 +41,14 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
           </div>
           <div>
             <h2 className="text-2xl font-black uppercase tracking-widest text-foreground">{t('groups.title')}</h2>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="mt-1 flex flex-wrap items-center gap-2">
               <GlowBadge size="xs" color="green">
                 {groups.length} {t('groups.configured')}
               </GlowBadge>
               <span className="text-[10px] font-bold text-muted-foreground opacity-40 italic">{t('groups.hint')}</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground/65">
+                {t('footer.dropHint')}
+              </span>
             </div>
           </div>
         </div>
@@ -88,6 +93,7 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
                 onDndToggle={() => console.log('dnd toggled')}
                 onRemoveProject={(pid) => onRemoveProjectFromGroup(group.id, pid)}
                 onLaunch={() => onLaunchGroup(group.id)}
+                onCreateRaycastLauncher={() => onCreateRaycastLauncher(group)}
               />
             </motion.div>
           ))}
