@@ -69,6 +69,8 @@ export interface Project {
   addedAt: string;
   /** Set when the project is opened from Dev Hub (ISO 8601) */
   lastOpenedAt?: string;
+  /** Path to last Raycast script exported for this project (for cleanup on remove) */
+  raycastLauncherPath?: string;
 }
 
 /**
@@ -79,6 +81,8 @@ export interface Group {
   name: string;
   projectIds: string[];
   color?: string;
+  /** Path to last Raycast script exported for this group (for cleanup on delete) */
+  raycastLauncherPath?: string;
 }
 
 export type EditorType =

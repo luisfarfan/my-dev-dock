@@ -1,10 +1,10 @@
 {
   "app": {
-    "loading": "Syncing Hub..."
+    "loading": "Syncing myDevDock…"
   },
   "hub": {
-    "title": "Project Hub",
-    "subtitle": "Central Management & Launchpad",
+    "title": "myDevDock",
+    "subtitle": "Your local repos, one click away",
     "searchPlaceholder": "Find in workspace...",
     "viewCompact": "Compact view",
     "viewDetailed": "Detailed view"
@@ -33,10 +33,10 @@
     "ok": "OK"
   },
   "groups": {
-    "title": "Smart Groups",
+    "title": "Groups",
     "configured": "CONFIGURED",
-    "hint": "Cluster your workspace logically",
-    "newCluster": "New Logical Cluster",
+    "hint": "Group projects and open them together",
+    "newCluster": "New group",
     "empty": "No launch groups defined",
     "defaultName": "GROUP {{n}}"
   },
@@ -54,7 +54,7 @@
   },
   "footer": {
     "ready": "Ready to Launch",
-    "dropHint": "Drop projects on clusters"
+    "dropHint": "Drag a project into a group"
   },
   "commandPalette": {
     "title": "Command Palette",
@@ -82,7 +82,7 @@
   },
   "language": {
     "section": "Language",
-    "hint": "Interface language for Dev Hub.",
+    "hint": "Interface language for myDevDock.",
     "es": "Spanish",
     "en": "English"
   },
@@ -114,7 +114,7 @@
       "dateDesc": "newest first"
     },
     "options": {
-      "lastOpenedAt": { "label": "Last opened", "hint": "From Dev Hub (MRU)" },
+      "lastOpenedAt": { "label": "Last opened", "hint": "From myDevDock (MRU)" },
       "lastCommitAt": { "label": "Last Git commit", "hint": "Date of latest commit" },
       "name": { "label": "Name", "hint": "Alphabetical by folder" },
       "addedAt": { "label": "Registered", "hint": "When added to the hub" },
@@ -168,7 +168,7 @@
   "raycast": {
     "settings": {
       "title": "Raycast Script Commands",
-      "hint": "Set the folder Raycast already uses for scripts. Dev Hub will create launchers there.",
+      "hint": "Set the folder Raycast already uses for scripts. myDevDock will create launchers there.",
       "refresh": "Refresh",
       "statusUnknown": "Raycast status not checked yet.",
       "detected": "Raycast detected on this system.",
@@ -208,7 +208,7 @@
     }
   },
   "sidebar": {
-    "brand": "DevHub",
+    "brand": "myDevDock",
     "nav": {
       "projects": "Projects",
       "groups": "Groups",

@@ -2,6 +2,7 @@
   "name": "dev-hub-tauri",
   "private": true,
   "version": "0.1.0",
+  "license": "MIT",
   "packageManager": "bun@1.3.11",
   "type": "module",
   "scripts": {

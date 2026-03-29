@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "A Tauri App"
 authors = ["Luis Eduardo Farfán Melgar"]
 edition = "2021"
+license = "MIT"
 
 [lib]
 name = "dev_hub_tauri_lib"

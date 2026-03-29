@@ -417,7 +417,10 @@
   }
 
   .app-drag-region {
-    background: transparent;
+    /* WKWebView needs a real hit target; fully transparent areas sometimes ignore drags */
+    background: rgba(0, 0, 0, 0.001);
+    -webkit-app-region: drag;
+    app-region: drag;
   }
 
   .floating-panel {

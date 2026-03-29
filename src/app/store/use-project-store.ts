@@ -197,7 +197,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   exportRaycastLauncher: async (input) => {
     try {
-      return await projectService.exportRaycastLauncher(input);
+      const result = await projectService.exportRaycastLauncher(input);
+      const [projects, groups] = await Promise.all([
+        projectService.getProjects(),
+        projectService.getGroups(),
+      ]);
+      set({ projects, groups });
+      return result;
     } catch (err) {
       set({ error: (err as Error).message });
       throw err;
@@ -205,12 +211,16 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   launchGroup: async (id) => {
-    await projectService.launchGroup(id);
     try {
-      const projects = await projectService.getProjects();
-      set({ projects: [...projects] });
-    } catch {
-      /* ignore */
+      await projectService.launchGroup(id);
+      try {
+        const projects = await projectService.getProjects();
+        set({ projects: [...projects] });
+      } catch {
+        /* ignore refresh */
+      }
+    } catch (err) {
+      set({ error: (err as Error).message });
     }
   },
 
@@ -249,25 +259,43 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   addProjectToGroup: async (groupId, projectId) => {
+    const prevGroups = get().groups;
+    const group = prevGroups.find((g) => g.id === groupId);
+    if (!group || group.projectIds.includes(projectId)) return;
+
+    const updated = { ...group, projectIds: [...group.projectIds, projectId] };
     set({
-      groups: get().groups.map((g) => {
-        if (g.id === groupId && !g.projectIds.includes(projectId)) {
-          return { ...g, projectIds: [...g.projectIds, projectId] };
-        }
-        return g;
-      }),
+      groups: prevGroups.map((g) => (g.id === groupId ? updated : g)),
     });
+
+    try {
+      const persisted = await projectService.updateGroup(updated);
+      set({
+        groups: get().groups.map((g) => (g.id === groupId ? persisted : g)),
+      });
+    } catch (err) {
+      set({ error: (err as Error).message, groups: prevGroups });
+    }
   },
 
   removeProjectFromGroup: async (groupId, projectId) => {
+    const prevGroups = get().groups;
+    const group = prevGroups.find((g) => g.id === groupId);
+    if (!group) return;
+
+    const updated = { ...group, projectIds: group.projectIds.filter((id) => id !== projectId) };
     set({
-      groups: get().groups.map((g) => {
-        if (g.id === groupId) {
-          return { ...g, projectIds: g.projectIds.filter((id) => id !== projectId) };
-        }
-        return g;
-      }),
+      groups: prevGroups.map((g) => (g.id === groupId ? updated : g)),
     });
+
+    try {
+      const persisted = await projectService.updateGroup(updated);
+      set({
+        groups: get().groups.map((g) => (g.id === groupId ? persisted : g)),
+      });
+    } catch (err) {
+      set({ error: (err as Error).message, groups: prevGroups });
+    }
   },
 }));
 

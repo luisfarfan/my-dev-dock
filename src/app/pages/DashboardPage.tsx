@@ -119,7 +119,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <div className="flex flex-col gap-16 max-w-[1400px] mx-auto pb-20">
+      <div className="mx-auto flex max-w-[1400px] flex-col gap-16 px-3 pb-20 sm:px-4 lg:px-5">
         <DashboardHubHeader
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}

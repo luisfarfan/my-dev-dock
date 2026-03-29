@@ -46,9 +46,6 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
                 {groups.length} {t('groups.configured')}
               </GlowBadge>
               <span className="text-[10px] font-bold text-muted-foreground opacity-40 italic">{t('groups.hint')}</span>
-              <span className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground/65">
-                {t('footer.dropHint')}
-              </span>
             </div>
           </div>
         </div>

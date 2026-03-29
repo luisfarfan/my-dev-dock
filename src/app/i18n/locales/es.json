@@ -1,10 +1,10 @@
 {
   "app": {
-    "loading": "Sincronizando Hub..."
+    "loading": "Sincronizando myDevDock…"
   },
   "hub": {
-    "title": "Project Hub",
-    "subtitle": "Gestión central y lanzadera",
+    "title": "myDevDock",
+    "subtitle": "Tus repos locales, a un clic",
     "searchPlaceholder": "Buscar en el workspace...",
     "viewCompact": "Vista compacta",
     "viewDetailed": "Vista detallada"
@@ -33,10 +33,10 @@
     "ok": "OK"
   },
   "groups": {
-    "title": "Grupos inteligentes",
+    "title": "Grupos",
     "configured": "CONFIGURADOS",
-    "hint": "Agrupa tu workspace con lógica",
-    "newCluster": "Nuevo clúster lógico",
+    "hint": "Agrupa proyectos y ábrelos juntos",
+    "newCluster": "Nuevo grupo",
     "empty": "Sin grupos de lanzamiento",
     "defaultName": "GRUPO {{n}}"
   },
@@ -54,7 +54,7 @@
   },
   "footer": {
     "ready": "Listo para lanzar",
-    "dropHint": "Arrastra proyectos a los clústeres"
+    "dropHint": "Arrastra un proyecto a un grupo"
   },
   "commandPalette": {
     "title": "Paleta de comandos",
@@ -82,7 +82,7 @@
   },
   "language": {
     "section": "Idioma",
-    "hint": "Idioma de la interfaz de Dev Hub.",
+    "hint": "Idioma de la interfaz de myDevDock.",
     "es": "Español",
     "en": "Inglés"
   },
@@ -114,7 +114,7 @@
       "dateDesc": "más reciente primero"
     },
     "options": {
-      "lastOpenedAt": { "label": "Última apertura", "hint": "Desde Dev Hub (MRU)" },
+      "lastOpenedAt": { "label": "Última apertura", "hint": "Desde myDevDock (MRU)" },
       "lastCommitAt": { "label": "Último commit Git", "hint": "Fecha del último commit" },
       "name": { "label": "Nombre", "hint": "Alfabético por carpeta" },
       "addedAt": { "label": "Registro", "hint": "Cuándo se añadió al hub" },
@@ -168,7 +168,7 @@
   "raycast": {
     "settings": {
       "title": "Raycast Script Commands",
-      "hint": "Configura la carpeta que Raycast ya usa para scripts. Dev Hub creará launchers allí.",
+      "hint": "Configura la carpeta que Raycast ya usa para scripts. myDevDock creará launchers allí.",
       "refresh": "Revisar",
       "statusUnknown": "Estado de Raycast no verificado.",
       "detected": "Raycast detectado en el sistema.",
@@ -208,7 +208,7 @@
     }
   },
   "sidebar": {
-    "brand": "DevHub",
+    "brand": "myDevDock",
     "nav": {
       "projects": "Proyectos",
       "groups": "Grupos",

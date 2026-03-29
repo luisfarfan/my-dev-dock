@@ -16,13 +16,16 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-neon-green/10 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-neon-blue/10 rounded-full blur-[100px] pointer-events-none z-0" />
 
-      <div className="relative z-10 box-border flex h-dvh w-screen min-h-0 flex-col px-3 pb-3 pt-7 lg:px-4 lg:pb-4 lg:pt-9">
-        <section className="desktop-glass flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-3xl">
-          <div className="flex h-10 shrink-0 border-b border-border">
-            <div className="w-[82px] shrink-0" aria-hidden />
-            <div data-tauri-drag-region className="app-drag-region min-h-10 flex-1" />
-          </div>
-          <main className="min-h-0 flex-1 overflow-y-auto py-5 pl-[82px] pr-6 lg:py-6 lg:pr-10">
+      {/* Top outer padding is empty transparent webview: without a drag strip, clicks do nothing (overlay titlebar). */}
+      <div
+        aria-hidden
+        data-tauri-drag-region
+        className="app-drag-region pointer-events-auto fixed inset-x-0 top-0 z-50 box-border h-7 pl-[82px] lg:h-9"
+      />
+
+      <div className="relative z-10 box-border flex h-dvh w-screen min-h-0 flex-col pt-7 lg:pt-9">
+        <section className="desktop-glass flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-none">
+          <main className="min-h-0 flex-1 overflow-y-auto pt-3 pb-4 pl-[82px] pr-5 lg:pt-4 lg:pb-5 lg:pr-8">
             {children}
           </main>
         </section>

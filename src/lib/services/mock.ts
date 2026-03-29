@@ -127,7 +127,8 @@ export class MockProjectService implements ProjectService {
 
   async removeProject(id: string): Promise<void> {
     const index = MOCK_PROJECTS.findIndex((p) => p.id === id);
-    if (index !== -1) MOCK_PROJECTS.splice(index, 1);
+    if (index === -1) return;
+    MOCK_PROJECTS.splice(index, 1);
   }
 
   async createGroup(name: string, projectIds: string[]): Promise<Group> {
@@ -195,11 +196,25 @@ export class MockProjectService implements ProjectService {
   }
 
   async exportRaycastLauncher(input: RaycastLauncherInput): Promise<RaycastLauncherResult> {
-    if (!MOCK_SETTINGS.raycastScriptsPath) {
+    const dir = MOCK_SETTINGS.raycastScriptsPath?.trim();
+    if (!dir) {
       throw new Error('Raycast scripts path is not configured');
     }
+    const stem = input.filename.replace(/\.sh$/i, '').trim() || 'launcher';
+    const filePath = `${dir.replace(/\/$/, '')}/${stem}.sh`;
+    if (input.targetType === 'project') {
+      const p = MOCK_PROJECTS.find((x) => x.id === input.targetId);
+      if (p) {
+        p.raycastLauncherPath = filePath;
+      }
+    } else {
+      const g = MOCK_GROUPS.find((x) => x.id === input.targetId);
+      if (g) {
+        g.raycastLauncherPath = filePath;
+      }
+    }
     return {
-      filePath: `${MOCK_SETTINGS.raycastScriptsPath}/${input.filename}.sh`,
+      filePath,
       overwritten: false,
     };
   }
