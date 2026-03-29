@@ -1,17 +1,38 @@
 # myDevDock
 
-<p align="center">
-  <img src="docs/readme/hero-dashboard.png" alt="myDevDock — neon glass dashboard with projects and groups" width="780" />
-</p>
+![myDevDock main dashboard — projects and groups in one place](./docs/readme/hero-dashboard.png)
 
-<p align="center">
-  <strong>myDevDock</strong> is a desktop app for developers who juggle many local repositories.<br />
-  Built with <strong>Tauri v2</strong>, <strong>React 19</strong>, and <strong>Rust</strong>. Your data stays on your machine — no cloud account required.
-</p>
+**myDevDock** is a **desktop hub** for local development folders: register repos, scan parent paths with monorepo-aware logic, see Git and stack signals at a glance, and open everything in your preferred editor—alone, in **groups**, or via **Raycast** scripts you generate from the UI.
+
+Built with **Tauri v2**, **React 19**, and **Rust**. All data stays on your machine; no cloud account.
 
 ---
 
-## What it does
+## In practice
+
+The flows below mirror how you actually use the app: from browsing what you have registered, to opening a set of repos together, to reusing that same open sequence from Raycast. *The two animations at the end of this section are large files and can take a few seconds to appear.*
+
+### Rich cards for each repo
+
+See stacks, Git branch and status, and shortcuts without digging through Finder.
+
+![Project cards with stack tags and Git metadata](./docs/readme/projects-grid.png)
+
+### One action opens a whole group
+
+Bundle projects (for example “frontend + API + docs”), then launch them all in your default editor with an optional delay between windows—useful when you always start the same set of services.
+
+![Opening a group launches each project in the editor](./docs/readme/groups-open-editor.gif)
+
+### The same paths from Raycast
+
+Export a Script Command once per project or group; from Raycast you trigger the same opens in the editor you chose in myDevDock.
+
+![Running a Raycast script generated from myDevDock](./docs/readme/groups-raycast-open-editor.gif)
+
+---
+
+## Features
 
 | Area | Capability |
 |------|------------|
@@ -27,36 +48,6 @@
 | **Multi-window** | Separate settings UI path; **Tauri events** sync **theme** and **app settings** across webviews instantly. |
 | **Persistence** | Single JSON file under the app data directory (projects, groups, settings). |
 | **Dev without desktop** | `bun run dev` uses **mock** services when `window.__TAURI__` is missing. |
-
----
-
-## Screenshots & demos
-
-### Project grid
-
-Browse registered repos with stack tags, Git status, and quick actions.
-
-<p align="center">
-  <img src="docs/readme/projects-grid.png" alt="Project cards grid with stack and Git metadata" width="780" />
-</p>
-
-### Groups — launch in your editor
-
-Create groups, reorder with drag-and-drop, and open every project in your default editor (with optional delay between launches).
-
-<p align="center">
-  <img src="docs/readme/groups-open-editor.gif" alt="Screen recording: launching a group opens each project in the editor" width="780" />
-</p>
-
-### Raycast launchers
-
-Generate Script Command `.sh` files for a project or group, then run them from Raycast to open the same paths in your selected editor.
-
-<p align="center">
-  <img src="docs/readme/groups-raycast-open-editor.gif" alt="Screen recording: Raycast running a myDevDock-generated script to open group projects in the editor" width="780" />
-</p>
-
-*GIFs are larger files; they may take a moment to load on slow connections.*
 
 ---
 
