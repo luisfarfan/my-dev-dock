@@ -24,6 +24,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
+      # semantic-release v25+ requires Node ^22.14.0 || >= 24.10.0 (runner default is Node 20).
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
