@@ -4,6 +4,13 @@ on:
   push:
     tags:
       - 'v*'
+  # Run once from Actions tab if installers are missing (e.g. before GH_TOKEN was set).
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Git tag to build (e.g. v0.2.0)'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -27,6 +34,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+          fetch-depth: 0
 
       - name: Linux dependencies
         if: matrix.platform == 'ubuntu-22.04'
@@ -53,7 +63,7 @@ jobs:
           projectPath: src-tauri
           tauriScript: bun run tauri
           includeUpdaterJson: false
-          tagName: ${{ github.ref_name }}
+          tagName: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
           releaseName: 'myDevDock ${{ github.ref_name }}'
           releaseBody: 'Desktop installers built by GitHub Actions. See the [changelog](https://github.com/luisfarfan/my-dev-dock/blob/master/CHANGELOG.md) for details.'
           releaseDraft: false
