@@ -9,10 +9,20 @@
     "viewCompact": "Compact view",
     "viewDetailed": "Detailed view"
   },
+  "minimalView": {
+    "title": "Minimal view",
+    "enable": "Enable minimal view",
+    "disable": "Disable minimal view",
+    "backToNormal": "Back to normal view",
+    "emptyGroups": "No groups available.",
+    "emptyProjects": "No projects available."
+  },
   "projects": {
     "title": "Active Projects",
     "detected": "DETECTED",
     "scanFolder": "Scan Parent Folder",
+    "sync": "SYNC",
+    "syncTitle": "Project sync",
     "register": "Register Project",
     "clearAll": "Clear all",
     "clearing": "Clearing...",
@@ -23,6 +33,9 @@
     "dialogScanTitle": "Select parent folder to scan",
     "scanNoProjects": "No projects were found in that folder. Check the path and that projects are within 5 levels deep.",
     "scanAdded": "Added {{count}} projects to the dashboard.",
+    "syncAddedListLabel": "These projects were added:",
+    "syncNoNew": "No new projects to add.",
+    "syncBasePath": "Synced parent folder",
     "scanError": "Could not scan folder: {{message}}",
     "confirmClear": "This will remove ALL projects and groups from the dashboard. Continue?",
     "confirmClearTitle": "Confirm deletion",

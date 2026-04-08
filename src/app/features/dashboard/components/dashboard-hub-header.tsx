@@ -1,4 +1,4 @@
-import { ArrowUpDown, Dock, LayoutGrid, List, Settings } from 'lucide-react';
+import { ArrowUpDown, Dock, LayoutGrid, List, Minimize2, Settings } from 'lucide-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { NeonButton, SearchInput } from '@org/ui-kit';
@@ -10,6 +10,8 @@ export interface DashboardHubHeaderProps {
   onViewModeChange: (mode: 'grid' | 'list') => void;
   showGroupsFirst: boolean;
   onToggleSectionOrder: () => void;
+  isMinimalView: boolean;
+  onToggleMinimalView: () => void;
   onOpenSettings: () => void;
 }
 
@@ -20,6 +22,8 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
   onViewModeChange,
   showGroupsFirst,
   onToggleSectionOrder,
+  isMinimalView,
+  onToggleMinimalView,
   onOpenSettings,
 }) => {
   const { t } = useTranslation();
@@ -86,57 +90,74 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="relative group hidden lg:block">
-          <SearchInput
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder={t('hub.searchPlaceholder')}
-            className="min-w-[320px]"
-            data-hub-search-input=""
-          />
-        </div>
-        <div className="w-px h-10 bg-border mx-2" />
-        <div className="flex items-center gap-1 rounded-lg border border-border bg-muted/50 p-1">
-          <NeonButton
-            variant={viewMode === 'grid' ? 'primary' : 'ghost'}
-            size="icon"
-            className="w-9 h-9"
-            onClick={() => onViewModeChange('grid')}
-            title={t('hub.viewCompact')}
-          >
-            <LayoutGrid className="w-4 h-4" />
-          </NeonButton>
-          <NeonButton
-            variant={viewMode === 'list' ? 'primary' : 'ghost'}
-            size="icon"
-            className="w-9 h-9"
-            onClick={() => onViewModeChange('list')}
-            title={t('hub.viewDetailed')}
-          >
-            <List className="w-4 h-4" />
-          </NeonButton>
-          <div className="mx-0.5 h-6 w-px bg-border" />
-          <div className="group relative">
-            <NeonButton
-              variant="ghost"
-              size="icon"
-              className="w-9 h-9"
-              onClick={onToggleSectionOrder}
-              title={
-                showGroupsFirst
-                  ? t('layoutOrder.ctaProjectsFirst')
-                  : t('layoutOrder.ctaGroupsFirst')
-              }
-            >
-              <ArrowUpDown className="w-4 h-4" />
-            </NeonButton>
-            <span className="pointer-events-none absolute left-1/2 top-full z-40 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-border bg-popover px-2 py-1 text-[10px] font-bold text-foreground opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
-              {showGroupsFirst
-                ? t('layoutOrder.ctaProjectsFirst')
-                : t('layoutOrder.ctaGroupsFirst')}
-            </span>
-          </div>
-        </div>
+        {!isMinimalView ? (
+          <>
+            <div className="relative group hidden lg:block">
+              <SearchInput
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                placeholder={t('hub.searchPlaceholder')}
+                className="min-w-[320px]"
+                data-hub-search-input=""
+              />
+            </div>
+            <div className="w-px h-10 bg-border mx-2" />
+            <div className="flex items-center gap-1 rounded-lg border border-border bg-muted/50 p-1">
+              <NeonButton
+                variant={viewMode === 'grid' ? 'primary' : 'ghost'}
+                size="icon"
+                className="w-9 h-9"
+                onClick={() => onViewModeChange('grid')}
+                title={t('hub.viewCompact')}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </NeonButton>
+              <NeonButton
+                variant={viewMode === 'list' ? 'primary' : 'ghost'}
+                size="icon"
+                className="w-9 h-9"
+                onClick={() => onViewModeChange('list')}
+                title={t('hub.viewDetailed')}
+              >
+                <List className="w-4 h-4" />
+              </NeonButton>
+              <div className="mx-0.5 h-6 w-px bg-border" />
+              <NeonButton
+                variant={isMinimalView ? 'primary' : 'ghost'}
+                size="icon"
+                className="w-9 h-9"
+                onClick={onToggleMinimalView}
+                title={
+                  isMinimalView
+                    ? t('minimalView.disable')
+                    : t('minimalView.enable')
+                }
+              >
+                <Minimize2 className="w-4 h-4" />
+              </NeonButton>
+              <div className="group relative">
+                <NeonButton
+                  variant="ghost"
+                  size="icon"
+                  className="w-9 h-9"
+                  onClick={onToggleSectionOrder}
+                  title={
+                    showGroupsFirst
+                      ? t('layoutOrder.ctaProjectsFirst')
+                      : t('layoutOrder.ctaGroupsFirst')
+                  }
+                >
+                  <ArrowUpDown className="w-4 h-4" />
+                </NeonButton>
+                <span className="pointer-events-none absolute left-1/2 top-full z-40 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-border bg-popover px-2 py-1 text-[10px] font-bold text-foreground opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+                  {showGroupsFirst
+                    ? t('layoutOrder.ctaProjectsFirst')
+                    : t('layoutOrder.ctaGroupsFirst')}
+                </span>
+              </div>
+            </div>
+          </>
+        ) : null}
         <NeonButton
           variant="ghost"
           size="icon"

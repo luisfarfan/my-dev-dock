@@ -16,6 +16,7 @@ interface ProjectState {
   groups: Group[];
   settings: AppSettings | null;
   installedEditors: EditorType[];
+  isMinimalView: boolean;
   isLoading: boolean;
   error: string | null;
 
@@ -28,12 +29,14 @@ interface ProjectState {
   patchSettings: (partial: Partial<AppSettings>) => Promise<void>;
   openProjectWithEditor: (path: string, editor: EditorType) => Promise<void>;
   exportRaycastLauncher: (input: RaycastLauncherInput) => Promise<RaycastLauncherResult>;
-  scanDirectory: (path: string) => Promise<number>;
+  scanDirectory: (path: string) => Promise<Project[]>;
   registerProject: (path: string) => Promise<void>;
 
   removeProject: (id: string) => Promise<void>;
   openProject: (path: string) => Promise<void>;
   launchGroup: (id: string) => Promise<void>;
+  setMinimalView: (value: boolean) => Promise<void>;
+  toggleMinimalView: () => Promise<void>;
   clearAll: () => Promise<void>;
   createGroup: () => Promise<string>;
   updateGroup: (group: Group) => Promise<void>;
@@ -45,6 +48,17 @@ interface ProjectState {
 
 const projectService = getProjectService();
 const settingsService = getSettingsService();
+const MINIMAL_VIEW_STORAGE_KEY = 'dashboard:isMinimalView';
+
+function getInitialMinimalView(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.localStorage.getItem(MINIMAL_VIEW_STORAGE_KEY) === 'true';
+}
+
+function persistMinimalView(value: boolean) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(MINIMAL_VIEW_STORAGE_KEY, String(value));
+}
 
 function mergeUniqueProjects(existing: Project[], incoming: Project[]): Project[] {
   const byId = new Map(existing.map((project) => [project.id, project]));
@@ -59,6 +73,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   groups: [],
   settings: null,
   installedEditors: [],
+  isMinimalView: getInitialMinimalView(),
   isLoading: false,
   error: null,
 
@@ -137,12 +152,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   scanDirectory: async (path) => {
     set({ isLoading: true, error: null });
     try {
-      const newProjects = await projectService.scanDirectory(path);
+      const foundProjects = await projectService.scanDirectory(path);
       set((state) => ({ 
-        projects: mergeUniqueProjects(state.projects, newProjects),
+        projects: mergeUniqueProjects(state.projects, foundProjects),
         isLoading: false 
       }));
-      return newProjects.length;
+      return foundProjects;
     } catch (err) {
       set({ error: (err as Error).message, isLoading: false });
       throw err;
@@ -222,6 +237,21 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     } catch (err) {
       set({ error: (err as Error).message });
     }
+  },
+
+  setMinimalView: async (value) => {
+    persistMinimalView(value);
+    set({ isMinimalView: value });
+    try {
+      await projectService.setWidgetMode(value);
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  toggleMinimalView: async () => {
+    const nextValue = !get().isMinimalView;
+    await get().setMinimalView(nextValue);
   },
 
   clearAll: async () => {

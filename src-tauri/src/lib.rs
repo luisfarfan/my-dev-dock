@@ -8,6 +8,7 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
 use tauri::Manager;
+use tauri::{LogicalPosition, LogicalSize, Position, Size};
 use walkdir::WalkDir;
 
 // --- DTOs (JSON camelCase para el frontend) ---------------------------------
@@ -122,6 +123,50 @@ pub struct AppState {
     groups: Mutex<Vec<GroupRow>>,
     settings: Mutex<AppSettingsDto>,
     data_file: PathBuf,
+    widget_restore_bounds: Mutex<Option<WindowBounds>>,
+}
+
+#[derive(Debug, Clone)]
+struct WindowBounds {
+    width: f64,
+    height: f64,
+    x: f64,
+    y: f64,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct Rect {
+    x: f64,
+    y: f64,
+    width: f64,
+    height: f64,
+}
+
+fn clamp(value: f64, min: f64, max: f64) -> f64 {
+    value.max(min).min(max)
+}
+
+fn rect_intersection_area(a: Rect, b: Rect) -> f64 {
+    let left = a.x.max(b.x);
+    let top = a.y.max(b.y);
+    let right = (a.x + a.width).min(b.x + b.width);
+    let bottom = (a.y + a.height).min(b.y + b.height);
+    let w = (right - left).max(0.0);
+    let h = (bottom - top).max(0.0);
+    w * h
+}
+
+fn is_rect_visible_enough(target: Rect, container: Rect, min_ratio: f64) -> bool {
+    let area = (target.width * target.height).max(1.0);
+    let visible = rect_intersection_area(target, container);
+    (visible / area) >= min_ratio
+}
+
+fn center_rect_in(container: Rect, width: f64, height: f64) -> (f64, f64) {
+    (
+        container.x + ((container.width - width) / 2.0),
+        container.y + ((container.height - height) / 2.0),
+    )
 }
 
 fn normalize_settings_sort_by(settings: &mut AppSettingsDto) {
@@ -139,6 +184,7 @@ impl AppState {
             groups: Mutex::new(persisted.groups),
             settings: Mutex::new(persisted.settings),
             data_file,
+            widget_restore_bounds: Mutex::new(None),
         }
     }
 }
@@ -553,6 +599,23 @@ fn open_with_editor(path: &str, editor: &str) -> Result<(), String> {
 
     if Command::new(binary).arg(path).spawn().is_ok() {
         return Ok(());
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        if let Some(app_name) = editor_macos_bundle_name(editor) {
+            if Command::new("open")
+                .arg("-a")
+                .arg(app_name)
+                .arg("--")
+                .arg(path)
+                .status()
+                .map(|s| s.success())
+                .unwrap_or(false)
+            {
+                return Ok(());
+            }
+        }
     }
 
     open::that(path).map_err(|e| format!("Failed to open path: {}", e))
@@ -1133,6 +1196,138 @@ fn clear_all(state: tauri::State<'_, AppState>) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn set_widget_mode(
+    window: tauri::Window,
+    state: tauri::State<'_, AppState>,
+    enabled: bool,
+) -> Result<(), String> {
+    let scale = window.scale_factor().map_err(|e| e.to_string())?;
+
+    if enabled {
+        let size = window.outer_size().map_err(|e| e.to_string())?;
+        let pos = window.outer_position().map_err(|e| e.to_string())?;
+        let monitor = window.current_monitor().map_err(|e| e.to_string())?;
+
+        let (monitor_width, monitor_height) = if let Some(m) = monitor {
+            (m.size().width as f64 / scale, m.size().height as f64 / scale)
+        } else {
+            (size.width as f64 / scale, size.height as f64 / scale)
+        };
+
+        {
+            let mut restore = state.widget_restore_bounds.lock().map_err(|e| e.to_string())?;
+            if restore.is_none() {
+                *restore = Some(WindowBounds {
+                    width: size.width as f64 / scale,
+                    height: size.height as f64 / scale,
+                    x: pos.x as f64 / scale,
+                    y: pos.y as f64 / scale,
+                });
+            }
+        }
+
+        // Widget profile based on monitor size (stable), not current window size.
+        let target_width = clamp((monitor_width * 0.42).round(), 480.0, 680.0);
+        let target_height = clamp((monitor_height * 0.78).round(), 640.0, 980.0);
+
+        window
+            .set_size(Size::Logical(LogicalSize::new(target_width, target_height)))
+            .map_err(|e| e.to_string())?;
+        return Ok(());
+    }
+
+    let restore = {
+        let mut guard = state.widget_restore_bounds.lock().map_err(|e| e.to_string())?;
+        guard.take()
+    };
+
+    let monitor = window.current_monitor().map_err(|e| e.to_string())?;
+
+    let (monitor_x, monitor_y, monitor_width, monitor_height) = if let Some(m) = monitor {
+        (
+            m.position().x as f64 / scale,
+            m.position().y as f64 / scale,
+            m.size().width as f64 / scale,
+            m.size().height as f64 / scale,
+        )
+    } else {
+        let size = window.outer_size().map_err(|e| e.to_string())?;
+        (0.0, 0.0, size.width as f64 / scale, size.height as f64 / scale)
+    };
+
+    let monitor_rect = Rect {
+        x: monitor_x,
+        y: monitor_y,
+        width: monitor_width,
+        height: monitor_height,
+    };
+
+    let margin = 24.0;
+    let max_width = (monitor_rect.width - margin * 2.0).max(640.0);
+    let max_height = (monitor_rect.height - margin * 2.0).max(480.0);
+
+    // Smart fit fallback profile for normal mode.
+    let mut fallback_width = clamp(monitor_rect.width * 0.78, 980.0, 1320.0);
+    let mut fallback_height = clamp(monitor_rect.height * 0.84, 700.0, 980.0);
+    fallback_width = fallback_width.min(max_width);
+    fallback_height = fallback_height.min(max_height);
+
+    // Prefer previous normal size (manual resize) with safety clamps.
+    let (mut target_width, mut target_height) = if let Some(bounds) = restore.as_ref() {
+        (
+            clamp(bounds.width, 760.0, max_width),
+            clamp(bounds.height, 560.0, max_height),
+        )
+    } else {
+        (fallback_width, fallback_height)
+    };
+    target_width = target_width.min(max_width);
+    target_height = target_height.min(max_height);
+
+    let desired_rect = if let Some(bounds) = restore {
+        Rect {
+            x: bounds.x,
+            y: bounds.y,
+            width: target_width,
+            height: target_height,
+        }
+    } else {
+        let (cx, cy) = center_rect_in(monitor_rect, target_width, target_height);
+        Rect {
+            x: cx,
+            y: cy,
+            width: target_width,
+            height: target_height,
+        }
+    };
+
+    let (target_x, target_y) = if is_rect_visible_enough(desired_rect, monitor_rect, 0.45) {
+        let clamped_x = clamp(
+            desired_rect.x,
+            monitor_rect.x + margin,
+            monitor_rect.x + monitor_rect.width - target_width - margin,
+        );
+        let clamped_y = clamp(
+            desired_rect.y,
+            monitor_rect.y + margin,
+            monitor_rect.y + monitor_rect.height - target_height - margin,
+        );
+        (clamped_x, clamped_y)
+    } else {
+        center_rect_in(monitor_rect, target_width, target_height)
+    };
+
+    window
+        .set_size(Size::Logical(LogicalSize::new(target_width, target_height)))
+        .map_err(|e| e.to_string())?;
+    window
+        .set_position(Position::Logical(LogicalPosition::new(target_x, target_y)))
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
 fn export_raycast_launcher(
     state: tauri::State<'_, AppState>,
     input: RaycastLauncherInput,
@@ -1257,6 +1452,7 @@ pub fn run() {
             clear_all,
             detect_raycast_installation,
             export_raycast_launcher,
+            set_widget_mode,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

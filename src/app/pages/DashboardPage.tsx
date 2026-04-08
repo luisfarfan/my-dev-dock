@@ -29,6 +29,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
     if (typeof window === 'undefined') return false;
     return window.localStorage.getItem('dashboard:showGroupsFirst') === 'true';
   });
+  const hasSyncedWidgetModeRef = React.useRef(false);
 
   const settingsDrawerOpen = useSettingsDrawerStore((s) => s.isOpen);
   const closeSettingsDrawer = useSettingsDrawerStore((s) => s.close);
@@ -42,6 +43,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
     setSearchQuery,
     viewMode,
     setViewMode,
+    isMinimalView,
+    setMinimalView,
     openProjectWithEditor,
     removeProject,
     registerProject,
@@ -99,6 +102,12 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
   }, [showGroupsFirst]);
 
   React.useEffect(() => {
+    if (hasSyncedWidgetModeRef.current) return;
+    hasSyncedWidgetModeRef.current = true;
+    void setMinimalView(isMinimalView);
+  }, [isMinimalView, setMinimalView]);
+
+  React.useEffect(() => {
     void (async () => {
       const detected = await detectRaycastInstallation();
       setRaycastInstalled(detected);
@@ -127,49 +136,57 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
           onViewModeChange={setViewMode}
           showGroupsFirst={showGroupsFirst}
           onToggleSectionOrder={() => setShowGroupsFirst((prev) => !prev)}
+          isMinimalView={isMinimalView}
+          onToggleMinimalView={() => setMinimalView(!isMinimalView)}
           onOpenSettings={onOpenSettings}
         />
 
         <AnimatePresence mode="popLayout" initial={false}>
-          <motion.div
-            key="dashboard-groups-section"
-            layout
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className={showGroupsFirst ? '' : 'order-3'}
-          >
-            <DashboardGroupsSection
-              groups={groups}
-              projects={projects}
-              editingGroupId={editingGroupId}
-              onEditingGroupIdChange={setEditingGroupId}
-              onCreateGroup={createGroup}
-              onUpdateGroup={updateGroup}
-              onDeleteGroup={deleteGroup}
-              onRemoveProjectFromGroup={removeProjectFromGroup}
-              onLaunchGroup={launchGroup}
-              onCreateRaycastLauncher={(group) => setRaycastTarget({ type: 'group', group })}
-            />
-          </motion.div>
+          {!isMinimalView ? (
+            <>
+              <motion.div
+                key="dashboard-groups-section"
+                layout
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                className={showGroupsFirst ? '' : 'order-3'}
+              >
+                <DashboardGroupsSection
+                  groups={groups}
+                  projects={projects}
+                  editingGroupId={editingGroupId}
+                  onEditingGroupIdChange={setEditingGroupId}
+                  onCreateGroup={createGroup}
+                  onUpdateGroup={updateGroup}
+                  onDeleteGroup={deleteGroup}
+                  onRemoveProjectFromGroup={removeProjectFromGroup}
+                  onLaunchGroup={launchGroup}
+                  onCreateRaycastLauncher={(group) => setRaycastTarget({ type: 'group', group })}
+                />
+              </motion.div>
 
-          <motion.div
-            key="dashboard-order-separator"
-            layout
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="order-2"
-          >
-            <DashboardSectionSeparator />
-          </motion.div>
+              <motion.div
+                key="dashboard-order-separator"
+                layout
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                className="order-2"
+              >
+                <DashboardSectionSeparator />
+              </motion.div>
+            </>
+          ) : null}
 
           <motion.div
             key="dashboard-projects-section"
             layout
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className={showGroupsFirst ? 'order-3' : ''}
+            className={!isMinimalView && showGroupsFirst ? 'order-3' : ''}
           >
             <DashboardProjectsSection
               viewMode={viewMode}
               projects={projects}
+              groups={groups}
               sortLabel={projectSortLabel}
+              isMinimalView={isMinimalView}
               isClearing={isClearing}
               onClearingChange={setIsClearing}
               onRemoveProject={removeProject}
@@ -177,6 +194,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
               onScanDirectory={scanDirectory}
               onClearAll={clearAll}
               onOpenInEditor={handleOpenProject}
+              onLaunchGroup={launchGroup}
+              onExitMinimalView={() => setMinimalView(false)}
               onCreateRaycastLauncher={(project) => setRaycastTarget({ type: 'project', project })}
             />
           </motion.div>

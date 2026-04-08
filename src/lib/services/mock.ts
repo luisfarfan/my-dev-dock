@@ -218,6 +218,10 @@ export class MockProjectService implements ProjectService {
       overwritten: false,
     };
   }
+
+  async setWidgetMode(_enabled: boolean): Promise<void> {
+    return;
+  }
 }
 
 export class MockSettingsService implements SettingsService {

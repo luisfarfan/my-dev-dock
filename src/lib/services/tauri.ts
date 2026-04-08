@@ -73,6 +73,10 @@ export class TauriProjectService implements ProjectService {
   async exportRaycastLauncher(input: RaycastLauncherInput): Promise<RaycastLauncherResult> {
     return invoke<RaycastLauncherResult>('export_raycast_launcher', { input });
   }
+
+  async setWidgetMode(enabled: boolean): Promise<void> {
+    await invoke('set_widget_mode', { enabled });
+  }
 }
 
 export class TauriSettingsService implements SettingsService {

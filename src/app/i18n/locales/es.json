@@ -9,10 +9,20 @@
     "viewCompact": "Vista compacta",
     "viewDetailed": "Vista detallada"
   },
+  "minimalView": {
+    "title": "Vista minima",
+    "enable": "Activar vista minima",
+    "disable": "Desactivar vista minima",
+    "backToNormal": "Volver a vista normal",
+    "emptyGroups": "No hay grupos disponibles.",
+    "emptyProjects": "No hay proyectos disponibles."
+  },
   "projects": {
     "title": "Proyectos activos",
     "detected": "DETECTADOS",
     "scanFolder": "Escanear carpeta padre",
+    "sync": "SYNC",
+    "syncTitle": "Sincronización de proyectos",
     "register": "Registrar proyecto",
     "clearAll": "Borrar todo",
     "clearing": "Borrando...",
@@ -23,6 +33,9 @@
     "dialogScanTitle": "Selecciona la carpeta padre a escanear",
     "scanNoProjects": "No se detectaron proyectos en esa carpeta. Verifica la ruta y que los proyectos estén hasta 5 niveles de profundidad.",
     "scanAdded": "Se agregaron {{count}} proyectos al dashboard.",
+    "syncAddedListLabel": "Se agregaron estos proyectos:",
+    "syncNoNew": "Sin nuevos proyectos para agregar.",
+    "syncBasePath": "Carpeta padre sincronizada",
     "scanError": "No se pudo escanear la carpeta: {{message}}",
     "confirmClear": "Esto borrará TODOS los proyectos y grupos del dashboard. ¿Continuar?",
     "confirmClearTitle": "Confirmar borrado",

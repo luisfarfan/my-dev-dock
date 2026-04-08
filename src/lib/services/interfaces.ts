@@ -28,6 +28,7 @@ export interface ProjectService {
   syncProject(id: string): Promise<Project>;
   detectRaycastInstallation(): Promise<boolean>;
   exportRaycastLauncher(input: RaycastLauncherInput): Promise<RaycastLauncherResult>;
+  setWidgetMode(enabled: boolean): Promise<void>;
 }
 
 export interface SettingsService {
