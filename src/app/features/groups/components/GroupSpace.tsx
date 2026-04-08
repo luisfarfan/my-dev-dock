@@ -67,6 +67,9 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
                     autoFocus
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
                     className="bg-input border border-border rounded px-2 py-1 text-sm font-black text-primary focus:outline-none focus:border-primary/50 w-full"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleRename();

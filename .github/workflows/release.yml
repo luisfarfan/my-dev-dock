@@ -9,6 +9,7 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
+  actions: write # gh workflow run → Tauri installers workflow
 
 concurrency:
   group: semantic-release-${{ github.ref }}
@@ -18,8 +19,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      # Prefer repo secret GH_TOKEN (fine-grained or classic PAT, contents:write) so tag pushes
-      # trigger Tauri "on: push: tags". Default GITHUB_TOKEN pushes do not start other workflows.
+      # Prefer GH_TOKEN (PAT: contents:write + actions:read/write for gh workflow dispatch).
+      # Plain GITHUB_TOKEN cannot trigger other workflows via tag push; we dispatch Tauri explicitly below.
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -41,7 +42,27 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Record package version before release
+        id: before_version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
       - name: Semantic release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
         run: bunx semantic-release
+
+      - name: Dispatch Tauri installer build
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          AFTER=$(node -p "require('./package.json').version")
+          BEFORE="${{ steps.before_version.outputs.version }}"
+          if [ "$AFTER" = "$BEFORE" ]; then
+            echo "No version bump (nothing released); skipping Tauri workflow."
+            exit 0
+          fi
+          TAG="v${AFTER}"
+          echo "Dispatching Tauri build for tag $TAG"
+          gh workflow run tauri-artifacts.yml --ref master -f tag="$TAG"

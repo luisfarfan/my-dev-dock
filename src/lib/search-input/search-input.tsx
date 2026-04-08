@@ -16,6 +16,9 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
       <input
         type="text"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck={false}
         className="
           bg-input border border-border rounded-lg pl-10 pr-4 py-2 text-sm text-foreground
           focus:outline-none focus:border-primary/50 focus:bg-card/80

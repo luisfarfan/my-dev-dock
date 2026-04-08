@@ -148,7 +148,7 @@ Ejemplos: `fix: correct group launch persistence`, `feat: add Raycast script cle
 
 1. **Semantic release**: actualiza `CHANGELOG.md`, sincroniza la versión en `package.json`, `src-tauri/tauri.conf.json` y `src-tauri/Cargo.toml` (vía `scripts/sync-version.mjs`), crea el tag `vX.Y.Z` y publica la **GitHub Release** con notas.
 2. El commit de release incluye `[skip ci]` para no relanzar el workflow de versionado en bucle.
-3. **Tauri build** (`.github/workflows/tauri-artifacts.yml`): al existir el tag `v*`, se compila en macOS, Linux y Windows y se suben los instaladores al mismo release (puede tardar varios minutos).
+3. **Tauri build** (`.github/workflows/tauri-artifacts.yml`): si hubo bump de versión, el workflow de semantic-release dispara este job con `gh workflow run` (tag `vX.Y.Z`). Se compila en macOS, Linux y Windows y se suben los instaladores al mismo release (puede tardar varios minutos). Recuperación manual: Actions → *Tauri build and release assets* → Run workflow → indicar el tag.
 
 ### Local
 

@@ -141,6 +141,9 @@ export const RaycastLauncherModal: React.FC<RaycastLauncherModalProps> = ({
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
               className="w-full rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm"
               placeholder={t('raycast.form.launcherName')}
             />
@@ -151,6 +154,9 @@ export const RaycastLauncherModal: React.FC<RaycastLauncherModalProps> = ({
             <input
               value={filename}
               onChange={(e) => setFilename(slugify(e.target.value))}
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
               className="w-full rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm"
               placeholder={t('raycast.form.fileName')}
             />
@@ -203,6 +209,9 @@ export const RaycastLauncherModal: React.FC<RaycastLauncherModalProps> = ({
           <input
             value={keywords}
             onChange={(e) => setKeywords(e.target.value)}
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
             className="w-full rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm"
             placeholder={t('raycast.form.keywords')}
           />

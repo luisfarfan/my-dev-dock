@@ -1,10 +1,8 @@
 name: Tauri build and release assets
 
 on:
-  push:
-    tags:
-      - 'v*'
-  # Run once from Actions tab if installers are missing (e.g. before GH_TOKEN was set).
+  # Invoked by Semantic release workflow (gh workflow run) so installers always build after a bump.
+  # Manual recovery: Actions → Run workflow.
   workflow_dispatch:
     inputs:
       tag:
@@ -35,7 +33,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+          ref: ${{ inputs.tag }}
           fetch-depth: 0
 
       - name: Linux dependencies
@@ -63,8 +61,8 @@ jobs:
           projectPath: src-tauri
           tauriScript: bun run tauri
           includeUpdaterJson: false
-          tagName: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
-          releaseName: 'myDevDock ${{ github.ref_name }}'
+          tagName: ${{ inputs.tag }}
+          releaseName: 'myDevDock ${{ inputs.tag }}'
           releaseBody: 'Desktop installers built by GitHub Actions. See the [changelog](https://github.com/luisfarfan/my-dev-dock/blob/master/CHANGELOG.md) for details.'
           releaseDraft: false
           prerelease: false

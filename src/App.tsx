@@ -39,6 +39,9 @@ function App() {
         <input
           id="greet-input"
           onChange={(e) => setName(e.currentTarget.value)}
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
           placeholder="Enter a name..."
         />
         <button type="submit">Greet</button>
