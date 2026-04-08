@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/luisfarfan/my-dev-dock/compare/v1.0.0...v1.1.0) (2026-04-08)
+
+
+### Features
+
+* **dashboard:** add minimal widget view with smart window restore ([a94ae92](https://github.com/luisfarfan/my-dev-dock/commit/a94ae92c701463940966eda268259aac8c3fb401))
+
 # 1.0.0 (2026-03-29)
 
 

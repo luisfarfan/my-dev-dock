@@ -1,6 +1,6 @@
 [package]
 name = "dev-hub-tauri"
-version = "1.0.0"
+version = "1.1.0"
 description = "A Tauri App"
 authors = ["Luis Eduardo Farfán Melgar"]
 edition = "2021"
