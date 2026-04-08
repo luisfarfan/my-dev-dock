@@ -30,6 +30,10 @@ Export a Script Command once per project or group; from Raycast you trigger the 
 
 ![Running a Raycast script generated from myDevDock](./docs/readme/groups-raycast-open-editor.gif)
 
+### Minimal widget mode for quick launch
+
+Switch to a minimal dashboard that shows only project/group names for fast clicking. The app window also shifts to a compact widget-like size, and when you return to normal mode it restores to a monitor-aware size/position (keeps previous position when still visible, otherwise recenters safely).
+
 ---
 
 ## Features
@@ -43,6 +47,8 @@ Export a Script Command once per project or group; from Raycast you trigger the 
 | **Editors** | Open project path in Cursor, VS Code, Zed, WebStorm, Sublime, Neovim, Antigravity; default editor + per-launch picker. **Probable editor** hint from `.cursor`, `.vscode`, etc. |
 | **Usage sort** | **`lastOpenedAt`** when opened from the hub; sort also by name, date added, **Git commit time**, Git status. Settings persisted in Rust JSON state. |
 | **Groups** | Create groups, assign projects (incl. drag-and-drop), **launch all** with configurable delay. |
+| **Minimal mode** | Toggle a compact dashboard that lists only names (projects + groups), with one-click open/launch actions and quick return to normal view. |
+| **Window behavior** | Entering minimal mode resizes to a widget profile. Returning to normal mode uses smart monitor-aware restore (safe size clamps + visibility-aware positioning). |
 | **Raycast** | Configure a Script Commands folder once, then generate `.sh` launchers per **project** or **group** from the UI. Scripts target your chosen editor (with a macOS `open -a` fallback when the CLI is not on Raycast’s PATH). Removing a project or group removes its stored launcher file when applicable. |
 | **UI** | Neon / glass aesthetic; **multiple UI themes** (`data-theme` + CSS variables in `src/styles.css`). **i18n** via `react-i18next`. |
 | **Multi-window** | Separate settings UI path; **Tauri events** sync **theme** and **app settings** across webviews instantly. |
