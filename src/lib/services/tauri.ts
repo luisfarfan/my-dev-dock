@@ -2,6 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import {
   Project,
   Group,
+  Workspace,
   AppSettings,
   EditorType,
   RaycastLauncherInput,
@@ -72,6 +73,29 @@ export class TauriProjectService implements ProjectService {
 
   async exportRaycastLauncher(input: RaycastLauncherInput): Promise<RaycastLauncherResult> {
     return invoke<RaycastLauncherResult>('export_raycast_launcher', { input });
+  }
+
+  async getWorkspaces(): Promise<Workspace[]> {
+    return invoke<Workspace[]>('get_workspaces');
+  }
+
+  async createWorkspace(input: Omit<Workspace, 'id' | 'createdAt'>): Promise<Workspace> {
+    return invoke<Workspace>('create_workspace', {
+      name: input.name,
+      matchQuery: input.matchQuery,
+      projectIds: input.projectIds,
+      includePathMatch: input.includePathMatch,
+      color: input.color ?? null,
+      icon: input.icon ?? null,
+    });
+  }
+
+  async updateWorkspace(workspace: Workspace): Promise<Workspace> {
+    return invoke<Workspace>('update_workspace', { workspace });
+  }
+
+  async deleteWorkspace(id: string): Promise<void> {
+    await invoke('delete_workspace', { id });
   }
 
   async setWidgetMode(enabled: boolean): Promise<void> {

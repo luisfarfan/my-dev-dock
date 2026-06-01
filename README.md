@@ -44,15 +44,18 @@ Switch to a minimal dashboard that shows only project/group names for fast click
 | **Smart scan** | Treats **one workspace root** per monorepo (Nx, Turborepo, pnpm/npm **workspaces**, Lerna, Rush, **Melos**, Cargo **`[workspace]`**, **Go** `go.work`, **Bazel** roots). Does not register every inner `apps/*` / `packages/*` package. After a match, **stops descending** that tree. |
 | **Git** | Branch, last commit message, **last commit timestamp (ISO)** for sorting, uncommitted change count, status for UI (clean / uncommitted / …). |
 | **Stacks** | Heuristic detection from `package.json`, `Cargo.toml`, `go.mod`, Python files, etc. |
-| **Editors** | Open project path in Cursor, VS Code, Zed, WebStorm, Sublime, Neovim, Antigravity; default editor + per-launch picker. **Probable editor** hint from `.cursor`, `.vscode`, etc. |
+| **Editors** | Open project path in Cursor, VS Code, Zed, WebStorm, Sublime, Neovim, **Antigravity** (`agy` CLI, then legacy `antigravity`, then macOS app); default editor + per-launch picker. **Copy path** on each project card. **Probable editor** hint from `.cursor`, `.vscode`, `.antigravity`, etc. |
 | **Usage sort** | **`lastOpenedAt`** when opened from the hub; sort also by name, date added, **Git commit time**, Git status. Settings persisted in Rust JSON state. |
 | **Groups** | Create groups, assign projects (incl. drag-and-drop), **launch all** with configurable delay. |
+| **Workspaces** | Named collections (client, prefix, team) with smart project suggestions. **Collapsible quick-launch panel** per active workspace; strip pills + **⌘K** workspace switch. Distinct from groups (filter/launch zone vs batch open). |
+| **Env Index** | Search and copy variables from project `.env*` files and optional **OS process env** (read-only, never saved). **⌘K** search, drawer (header key icon), masked secrets. |
+| **Command palette** | **⌘K** — env var search, workspace switch, quick actions (settings, env drawer, focus search). |
 | **Minimal mode** | Toggle a compact dashboard that lists only names (projects + groups), with one-click open/launch actions and quick return to normal view. |
 | **Window behavior** | Entering minimal mode resizes to a widget profile. Returning to normal mode uses smart monitor-aware restore (safe size clamps + visibility-aware positioning). |
 | **Raycast** | Configure a Script Commands folder once, then generate `.sh` launchers per **project** or **group** from the UI. Scripts target your chosen editor (with a macOS `open -a` fallback when the CLI is not on Raycast’s PATH). Removing a project or group removes its stored launcher file when applicable. |
 | **UI** | Neon / glass aesthetic; **multiple UI themes** (`data-theme` + CSS variables in `src/styles.css`). **i18n** via `react-i18next`. |
 | **Multi-window** | Separate settings UI path; **Tauri events** sync **theme** and **app settings** across webviews instantly. |
-| **Persistence** | Single JSON file under the app data directory (projects, groups, settings). |
+| **Persistence** | Single JSON file under the app data directory (projects, groups, **workspaces**, settings). |
 | **Dev without desktop** | `bun run dev` uses **mock** services when `window.__TAURI__` is missing. |
 
 ---
@@ -91,7 +94,7 @@ cd src-tauri && cargo check
 
 | Path | Role |
 |------|------|
-| [`src/app/`](src/app/) | App shell, dashboard, groups, projects, layouts |
+| [`src/app/`](src/app/) | App shell, dashboard, groups, **workspaces**, **env index**, projects, layouts |
 | [`src/lib/`](src/lib/) | Shared UI kit (`@org/ui-kit`), models alias `@org/models`, services `@org/services`, theme/sort helpers |
 | [`src-tauri/src/lib.rs`](src-tauri/src/lib.rs) | Tauri commands, scan logic, persistence, Git/stack detection |
 | [`docs/`](docs/) | Human + **AI-oriented** docs ([`docs/00-ai-brief.md`](docs/00-ai-brief.md)) |

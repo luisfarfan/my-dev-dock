@@ -24,7 +24,8 @@
 
 4. **Editors**
    - `get_installed_editors`, `open_in_editor(path, editor)`, `launch_project(path)` (default editor), `launch_group(groupId)` with delay from settings.
-   - Opening from the hub updates **`lastOpenedAt`** and persists (for MRU sort).
+   - **Antigravity** (Google, 2025+): tries CLI `agy` first, then legacy `antigravity`; macOS fallback `open -a Antigravity`. Install `agy` from Antigravity → Settings → Command Line.
+   - Opening from the hub updates **`lastOpenedAt`** and persists (for MRU sort). Project cards include **Copy path** to clipboard.
 
 5. **Settings** (`get_settings` / `update_settings`)
    - Default editor, git poll interval (stored; wiring may vary), launch delay, **`sortBy`** / **`sortDirection`** (e.g. `lastOpenedAt`, `lastCommitAt`, `name`, `addedAt`, `status`).
@@ -34,11 +35,20 @@
 6. **Groups**
    - CRUD + `launch_group`. UI uses **dnd-kit** to assign projects to groups.
 
-7. **UI / theme**
+7. **Workspaces**
+   - Named collections (e.g. client or prefix) for **quick access** — distinct from groups (batch launch).
+   - CRUD: `get_workspaces`, `create_workspace`, `update_workspace`, `delete_workspace`. Persisted in hub JSON (`workspaces` array).
+   - Create/edit modal: match token + optional path matching → **smart suggestions** (`src/lib/workspace-suggestions.ts`); user checks projects to include.
+   - Active workspace stored in **localStorage** (`use-active-workspace-store.ts`); strip pills on dashboard (`WorkspaceStrip`); **collapsible quick-launch panel** (`WorkspacePanel`, expand/minimize via `use-workspace-panel-store.ts`); **⌘K** palette switches workspace by name search.
+   - Main project grid shows **all** projects; the workspace panel is the focused launch zone when a workspace is active.
+   - Pending badge when new projects match a workspace token but are not yet in `projectIds`.
+   - Removing a project prunes it from workspaces; `clear_all` clears workspaces.
+
+8. **UI / theme**
    - Multiple visual themes: `data-theme` on `<html>`, Zustand store [`src/app/store/use-ui-theme-store.ts`](../src/app/store/use-ui-theme-store.ts), tokens in [`src/styles.css`](../src/styles.css).
    - **Cross-window sync** (Tauri): [`src/lib/tauri-multi-window-sync.ts`](../src/lib/tauri-multi-window-sync.ts) + listeners in [`src/app/app.tsx`](../src/app/app.tsx).
 
-8. **Raycast launchers**
+9. **Raycast launchers**
    - User configures Script Commands folder once in settings.
    - Hub can export `.sh` launchers for:
      - single project (open in selected/default editor),
@@ -46,14 +56,20 @@
    - Launcher metadata is configurable from UI (title, filename slug, icon preset, keywords).
    - Commands: `detect_raycast_installation`, `export_raycast_launcher`.
 
-9. **i18n**
+10. **Env Index**
+   - Scans `.env`, `.env.local`, `.env.development*`, `.env.production*`, `.env.test` at each **registered project root** plus **OS process environment** via `std::env::vars()` (read-only; values are **not** persisted in hub JSON). Skips `.env.example`.
+   - System vars use `source: "system"` / `projectId: "__system__"`. **Caveat**: GUI-launched apps on macOS inherit the process env, not your full interactive shell — vars from `.zshrc` only appear if set before launch (e.g. `open` from Terminal or `launchctl`).
+   - UI: **⌘K** search + copy (`KEY=value`), workspace name search in palette, **Env Index** drawer (header key icon), filter by project or system, masked secrets with reveal, duplicate-key badge across projects.
+   - Command: `scan_env_vars(includeSystem?)`. Runs on a **background thread**; system vars optional (lighter default for ⌘K). Frontend: `getEnvService()` in `src/lib/services/`.
+
+11. **i18n**
    - `react-i18next` used in dashboard, cards, command palette, settings-related UI.
 
 ## Tauri commands (Rust → frontend)
 
 Registered in `src-tauri/src/lib.rs` `generate_handler!`:
 
-`get_projects`, `get_groups`, `get_settings`, `update_settings`, `scan_directory`, `register_project`, `remove_project`, `get_installed_editors`, `open_in_editor`, `launch_project`, `launch_group`, `sync_project`, `create_group`, `update_group`, `delete_group`, `clear_all`, `detect_raycast_installation`, `export_raycast_launcher`.
+`get_projects`, `get_groups`, `get_workspaces`, `get_settings`, `update_settings`, `scan_directory`, `register_project`, `remove_project`, `get_installed_editors`, `open_in_editor`, `launch_project`, `launch_group`, `sync_project`, `create_group`, `update_group`, `delete_group`, `create_workspace`, `update_workspace`, `delete_workspace`, `clear_all`, `detect_raycast_installation`, `export_raycast_launcher`, `scan_env_vars`.
 
 Frontend must use **`src/lib/services/`** (`tauri.ts` / `mock.ts`), not raw `invoke()` in components.
 
@@ -66,6 +82,8 @@ Frontend must use **`src/lib/services/`** (`tauri.ts` / `mock.ts`), not raw `inv
 | Project state | `src/app/store/use-project-store.ts` |
 | Dashboard list order | `use-dashboard.ts` + `project-sort.ts` |
 | Theme | `src/lib/ui-theme.ts`, `use-ui-theme-store.ts`, `styles.css` |
+| Env index | `src/lib/env-index-utils.ts`, `src/app/features/env-index/`, `scan_env_vars` in `lib.rs` |
+| Workspaces | `src/lib/workspace-suggestions.ts`, `src/app/features/workspaces/`, `use-active-workspace-store.ts` |
 | UI kit export | `src/lib/*` barrel `@org/ui-kit` |
 
 ## Non-goals / caveats

@@ -155,13 +155,62 @@ Ejemplos: `fix: correct group launch persistence`, `feat: add Raycast script cle
 - Sincronizar versión manualmente (poco habitual): `bun run sync-version -- 0.2.0` (requiere argumento SemVer).
 - Probar release en seco (requiere `GITHUB_TOKEN`): `bunx semantic-release --dry-run`.
 
+### Firma, notarización y distribución macOS (Gatekeeper + Homebrew)
+
+Para que macOS considere la app como segura, **Homebrew no basta**: necesitas artefactos **firmados + notarizados + stapled**.
+
+#### 1) Secretos requeridos en GitHub Actions
+
+Configura estos secretos en el repo:
+
+- `APPLE_CERTIFICATE`: `.p12` del cert **Developer ID Application** codificado en base64
+- `APPLE_CERTIFICATE_PASSWORD`: password del `.p12`
+- `APPLE_SIGNING_IDENTITY`: nombre exacto de la identidad (`Developer ID Application: ...`)
+- `APPLE_API_KEY`: contenido del archivo `.p8` (App Store Connect API Key)
+- `APPLE_API_KEY_ID`
+- `APPLE_API_ISSUER`
+
+Ejemplo para generar base64 del `.p12`:
+
+```bash
+base64 -i developer-id-app.p12 | pbcopy
+```
+
+#### 2) Pipeline actual
+
+El workflow [`tauri-artifacts.yml`](../.github/workflows/tauri-artifacts.yml):
+
+- importa el certificado en keychain temporal del runner macOS
+- compila y publica assets con `tauri-action`
+- ejecuta validación de firma/notarización (`codesign`, `spctl`) sobre el `.app` dentro del `.dmg`
+
+#### 3) Validación manual recomendada (Mac limpia)
+
+Tras un release:
+
+```bash
+codesign --verify --deep --strict --verbose=2 "/Applications/myDevDock.app"
+spctl -a -vvv -t exec "/Applications/myDevDock.app"
+```
+
+#### 4) Homebrew tap propio
+
+Plantillas y guía:
+
+- [`docs/homebrew/README.md`](./homebrew/README.md)
+- [`docs/homebrew/Casks/mydevdock.rb`](./homebrew/Casks/mydevdock.rb)
+- [`scripts/release/update-homebrew-cask.sh`](../scripts/release/update-homebrew-cask.sh)
+
+Con esto puedes mantener un tap propio y luego preparar PR para `homebrew-cask`.
+
 ---
 
 ## ⚠️ Problemas comunes
 
 | Problema | Solución |
 |----------|----------|
-| `cargo build` falla | `rustup update && cd src-tauri && cargo update` |
+| `cargo build` falla | `rustup update && cd src-tauri && cargo update`. El repo incluye [`src-tauri/rust-toolchain.toml`](../src-tauri/rust-toolchain.toml) (`stable`). |
+| `rustup could not choose a version of cargo` | `rustup default stable` y reinicia el terminal. |
 | Error de serialización en IPC | `serde(rename_all = "camelCase")` en Rust y tipos alineados en TS |
 | Hot reload en Tauri | Revisar `build.devUrl` / puerto en `tauri.conf.json` y `vite.config.ts` |
 | Permisos Tauri v2 | Capabilities en `src-tauri/capabilities/` |

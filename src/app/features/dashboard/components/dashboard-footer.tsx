@@ -19,12 +19,9 @@ export const DashboardFooter: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <span className="text-[9px] font-mono text-muted-foreground/40">STATION_ID: DEV_MAC_PRO</span>
-        <GlowBadge size="xs" color="blue" className="opacity-40">
-          STABLE_V1
-        </GlowBadge>
-      </div>
+      <GlowBadge size="xs" color="blue" className="opacity-40">
+        myDevDock
+      </GlowBadge>
     </footer>
   );
 };

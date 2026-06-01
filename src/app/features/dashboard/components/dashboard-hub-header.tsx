@@ -1,4 +1,4 @@
-import { ArrowUpDown, Dock, LayoutGrid, List, Minimize2, Settings } from 'lucide-react';
+import { ArrowUpDown, Dock, KeyRound, LayoutGrid, List, Minimize2, Settings } from 'lucide-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { NeonButton, SearchInput } from '@org/ui-kit';
@@ -13,6 +13,7 @@ export interface DashboardHubHeaderProps {
   isMinimalView: boolean;
   onToggleMinimalView: () => void;
   onOpenSettings: () => void;
+  onOpenEnvIndex: () => void;
 }
 
 export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
@@ -25,6 +26,7 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
   isMinimalView,
   onToggleMinimalView,
   onOpenSettings,
+  onOpenEnvIndex,
 }) => {
   const { t } = useTranslation();
   const headerRef = React.useRef<HTMLElement | null>(null);
@@ -158,6 +160,16 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
             </div>
           </>
         ) : null}
+        <NeonButton
+          variant="ghost"
+          size="icon"
+          className="w-12 h-12 border border-border group hover:border-neon-blue/50 transition-colors"
+          onClick={onOpenEnvIndex}
+          title={t('envIndex.title')}
+          aria-label={t('envIndex.title')}
+        >
+          <KeyRound className="w-5 h-5 text-muted-foreground group-hover:text-neon-blue transition-colors" />
+        </NeonButton>
         <NeonButton
           variant="ghost"
           size="icon"

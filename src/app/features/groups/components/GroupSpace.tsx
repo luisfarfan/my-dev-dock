@@ -110,7 +110,8 @@ export const GroupSpace: React.FC<GroupSpaceProps> = ({
                   className="h-8 w-8 text-muted-foreground hover:text-primary"
                   title={t('raycast.form.title')}
                   aria-label={t('raycast.form.title')}
-                  onClick={onCreateRaycastLauncher}
+                  onClick={() => onCreateRaycastLauncher?.()}
+                  disabled={!onCreateRaycastLauncher}
                 >
                   <Command className="w-3.5 h-3.5" />
                 </NeonButton>

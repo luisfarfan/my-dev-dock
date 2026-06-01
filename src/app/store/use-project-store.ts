@@ -5,6 +5,9 @@ import {
   Project,
   RaycastLauncherInput,
   RaycastLauncherResult,
+  Workspace,
+  WorkspaceColor,
+  WorkspaceIcon,
 } from '@org/models';
 import { getProjectService, getSettingsService } from '@org/services';
 import i18n from '@/app/i18n/i18n';
@@ -14,6 +17,7 @@ import { create } from 'zustand';
 interface ProjectState {
   projects: Project[];
   groups: Group[];
+  workspaces: Workspace[];
   settings: AppSettings | null;
   installedEditors: EditorType[];
   isMinimalView: boolean;
@@ -43,6 +47,16 @@ interface ProjectState {
   deleteGroup: (id: string) => Promise<void>;
   addProjectToGroup: (groupId: string, projectId: string) => Promise<void>;
   removeProjectFromGroup: (groupId: string, projectId: string) => Promise<void>;
+  createWorkspace: (input: {
+    name: string;
+    matchQuery: string;
+    projectIds: string[];
+    includePathMatch: boolean;
+    color?: WorkspaceColor;
+    icon?: WorkspaceIcon;
+  }) => Promise<Workspace>;
+  updateWorkspace: (workspace: Workspace) => Promise<void>;
+  deleteWorkspace: (id: string) => Promise<void>;
 }
 
 
@@ -71,6 +85,7 @@ function mergeUniqueProjects(existing: Project[], incoming: Project[]): Project[
 export const useProjectStore = create<ProjectState>((set, get) => ({
   projects: [],
   groups: [],
+  workspaces: [],
   settings: null,
   installedEditors: [],
   isMinimalView: getInitialMinimalView(),
@@ -80,13 +95,14 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   fetchData: async () => {
     set({ isLoading: true, error: null });
     try {
-      const [projects, groups, settings, installedEditors] = await Promise.all([
+      const [projects, groups, workspaces, settings, installedEditors] = await Promise.all([
         projectService.getProjects(),
         projectService.getGroups(),
+        projectService.getWorkspaces(),
         settingsService.getSettings(),
         projectService.getInstalledEditors(),
       ]);
-      set({ projects, groups, settings, installedEditors, isLoading: false });
+      set({ projects, groups, workspaces, settings, installedEditors, isLoading: false });
     } catch (err) {
       set({ error: (err as Error).message, isLoading: false });
     }
@@ -257,7 +273,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   clearAll: async () => {
     try {
       await projectService.clearAll();
-      set({ projects: [], groups: [] });
+      set({ projects: [], groups: [], workspaces: [] });
     } catch (err) {
       set({ error: (err as Error).message });
     }
@@ -326,6 +342,24 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     } catch (err) {
       set({ error: (err as Error).message, groups: prevGroups });
     }
+  },
+
+  createWorkspace: async (input) => {
+    const workspace = await projectService.createWorkspace(input);
+    set({ workspaces: [...get().workspaces, workspace] });
+    return workspace;
+  },
+
+  updateWorkspace: async (updated) => {
+    const persisted = await projectService.updateWorkspace(updated);
+    set({
+      workspaces: get().workspaces.map((w) => (w.id === persisted.id ? persisted : w)),
+    });
+  },
+
+  deleteWorkspace: async (id) => {
+    await projectService.deleteWorkspace(id);
+    set({ workspaces: get().workspaces.filter((w) => w.id !== id) });
   },
 }));
 

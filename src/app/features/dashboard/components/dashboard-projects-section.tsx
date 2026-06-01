@@ -244,7 +244,9 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
             <Folder className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h2 className="text-2xl font-black uppercase tracking-widest text-foreground">{t('projects.title')}</h2>
+            <h2 className="text-2xl font-black uppercase tracking-widest text-foreground">
+              {t('projects.title')}
+            </h2>
             <div className="flex items-center gap-2 mt-1">
               <GlowBadge size="xs" color="blue">
                 {projects.length} {t('projects.detected')}
@@ -304,16 +306,15 @@ export const DashboardProjectsSection: React.FC<DashboardProjectsSectionProps> =
             : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
         }
       >
-        <AnimatePresence mode="popLayout">
-          {projects.map((project, idx) => (
+        <AnimatePresence mode="sync">
+          {projects.map((project) => (
             <motion.div
               key={project.id}
               className="min-w-0"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ delay: idx * 0.05 }}
-              layout
+              initial={false}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.12 } }}
+              transition={{ duration: 0.15 }}
             >
               <ProjectCard
                 project={project}

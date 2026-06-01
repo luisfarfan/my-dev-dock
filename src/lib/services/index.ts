@@ -1,5 +1,7 @@
 import type { ProjectService, SettingsService } from './interfaces';
+import { MockEnvService } from './env-service';
 import { MockProjectService, MockSettingsService } from './mock';
+import { TauriEnvService, type EnvService } from './env-service';
 import { TauriProjectService, TauriSettingsService } from './tauri';
 
 function isTauriRuntime(): boolean {
@@ -19,6 +21,7 @@ function isTauriRuntime(): boolean {
 }
 
 export type { ProjectService, SettingsService } from './interfaces';
+export type { EnvService } from './env-service';
 
 export function getProjectService(): ProjectService {
   return isTauriRuntime() ? new TauriProjectService() : new MockProjectService();
@@ -26,4 +29,8 @@ export function getProjectService(): ProjectService {
 
 export function getSettingsService(): SettingsService {
   return isTauriRuntime() ? new TauriSettingsService() : new MockSettingsService();
+}
+
+export function getEnvService(): EnvService {
+  return isTauriRuntime() ? new TauriEnvService() : new MockEnvService();
 }

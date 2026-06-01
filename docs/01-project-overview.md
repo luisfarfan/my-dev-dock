@@ -27,12 +27,14 @@ Una app desktop que permite:
 | **Información automática** | Heurísticas sobre `package.json`, `Cargo.toml`, `go.mod`, Python, etc. |
 | **Estado de Git** | Rama, mensaje del último commit, **marca de tiempo ISO del último commit** (ordenación), cambios sin commitear |
 | **Detección de stack** | React, Vue, Angular, Next, Nx, Rust, Go, Python, Docker, etc. (según archivos presentes) |
-| **Editores** | Cursor, VS Code, Zed, WebStorm, Sublime, Neovim, Antigravity; editor por defecto y selector al abrir |
+| **Editores** | Cursor, VS Code, Zed, WebStorm, Sublime, Neovim, Antigravity (`agy` / app); editor por defecto, selector al abrir, **copiar ruta** en cada card |
 | **Ordenación** | Por nombre, fecha de registro, **última apertura desde el hub**, fecha del último commit Git, estado Git |
 | **Grupos** | Agrupar proyectos (incl. drag-and-drop), **lanzar todos** con delay configurable |
+| **Workspaces** | Colecciones con sugerencias inteligentes; **panel expandible/minimizable** de acceso rápido por workspace activo; pills + **⌘K** |
+| **Env Index** | Buscar y copiar variables de `.env*` de proyectos registrados y entorno del SO (solo lectura); drawer + **⌘K** |
 | **Apariencia** | Varios **temas UI** (variables CSS + `data-theme`); **i18n** (`react-i18next`) |
 | **Multi-ventana** | Sincronización de tema y ajustes entre ventanas vía **eventos Tauri** |
-| **Paleta de comandos** | Atajos globales (búsqueda, ajustes, etc.) |
+| **Paleta de comandos** | **⌘K** — búsqueda env, cambio de workspace, ajustes, foco en búsqueda |
 
 > Detalle técnico para agentes de IA: [00-ai-brief.md](./00-ai-brief.md). README en inglés: [../README.md](../README.md).
 
@@ -77,19 +79,16 @@ La aplicación es **una sola pantalla** sin sidebar:
 ┌─────────────────────────────────────────────────────┐
 │  🔍 Buscador    │    ➕ Agregar Proyecto    │  ⚙️   │  ← Top Bar
 ├─────────────────────────────────────────────────────┤
-│  [Todos] [Trabajo] [Personal] [Side Projects] ...   │  ← Filtros (chips)
+│  [Todos] [Proxima] [Side] ...   ← Workspaces (strip + panel expandible)
 ├─────────────────────────────────────────────────────┤
-│                                                     │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐         │
-│  │ Project  │  │ Project  │  │ Project  │         │
-│  │ Card     │  │ Card     │  │ Card     │         │  ← Grid Principal
-│  └──────────┘  └──────────┘  └──────────┘         │
-│                                                     │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐         │
-│  │ Group    │  │ Project  │  │ Project  │         │
-│  │ Card     │  │ Card     │  │ Card     │         │
-│  └──────────┘  └──────────┘  └──────────┘         │
-│                                                     │
+│  ┌──────────┐  ┌──────────┐  ← Panel workspace (proyectos del cliente)
+│  │ Quick    │  │ Quick    │
+│  │ launch   │  │ launch   │
+│  └──────────┘  └──────────┘
+├─────────────────────────────────────────────────────┤
+│  Grupos (batch launch) …                            │
+├─────────────────────────────────────────────────────┤
+│  Grid de todos los proyectos …                      │
 └─────────────────────────────────────────────────────┘
 ```
 

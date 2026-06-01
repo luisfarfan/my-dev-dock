@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
 import { EditorType, Group, Project, RaycastLauncherInput } from '@org/models';
 import {
+  DashboardFooter,
   DashboardGroupsSection,
   DashboardHubHeader,
   DashboardProjectsSection,
@@ -12,6 +13,11 @@ import {
   SettingsDrawer,
   useDashboard,
 } from '@/app/features/dashboard';
+import { EnvIndexDrawer } from '@/app/features/env-index';
+import { WorkspaceModal, WorkspacePanel, WorkspaceStrip } from '@/app/features/workspaces';
+import { countPendingWorkspaceMatches } from '@/lib/workspace-suggestions';
+import type { Workspace } from '@org/models';
+import { useEnvIndexDrawerStore } from '@/app/store/use-env-index-drawer-store';
 import { useSettingsDrawerStore } from '@/app/store/use-settings-drawer-store';
 
 export interface DashboardPageProps {
@@ -33,10 +39,20 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
 
   const settingsDrawerOpen = useSettingsDrawerStore((s) => s.isOpen);
   const closeSettingsDrawer = useSettingsDrawerStore((s) => s.close);
+  const envIndexOpen = useEnvIndexDrawerStore((s) => s.isOpen);
+  const envIndexProjectId = useEnvIndexDrawerStore((s) => s.filterProjectId);
+  const closeEnvIndex = useEnvIndexDrawerStore((s) => s.close);
+  const openEnvIndex = useEnvIndexDrawerStore((s) => s.open);
 
   const {
     projects,
+    allProjects,
     groups,
+    workspaces,
+    activeWorkspace,
+    activeWorkspaceId,
+    setActiveWorkspaceId,
+    workspaceProjects,
     settings,
     installedEditors,
     searchQuery,
@@ -57,6 +73,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
     removeProjectFromGroup,
     editingGroupId,
     setEditingGroupId,
+    dndActiveGroupId,
+    setDndActiveGroupId,
     fetchInstalledEditors,
     detectRaycastInstallation,
     setDefaultEditor,
@@ -64,7 +82,15 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
     projectSortLabel,
     patchSettings,
     exportRaycastLauncher,
+    createWorkspace,
+    updateWorkspace,
+    deleteWorkspace,
   } = useDashboard();
+
+  const [workspaceModal, setWorkspaceModal] = React.useState<{
+    mode: 'create' | 'edit';
+    workspace: Workspace | null;
+  } | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -139,22 +165,44 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
           isMinimalView={isMinimalView}
           onToggleMinimalView={() => setMinimalView(!isMinimalView)}
           onOpenSettings={onOpenSettings}
+          onOpenEnvIndex={() => openEnvIndex()}
         />
 
-        <AnimatePresence mode="popLayout" initial={false}>
+        {!isMinimalView ? (
+          <WorkspaceStrip
+            workspaces={workspaces}
+            projects={allProjects}
+            activeWorkspaceId={activeWorkspaceId}
+            onSelect={setActiveWorkspaceId}
+            onCreate={() => setWorkspaceModal({ mode: 'create', workspace: null })}
+            onEdit={(workspace) => setWorkspaceModal({ mode: 'edit', workspace })}
+          />
+        ) : null}
+
+        {!isMinimalView && activeWorkspace ? (
+          <WorkspacePanel
+            workspace={activeWorkspace}
+            projects={workspaceProjects}
+            pendingCount={countPendingWorkspaceMatches(activeWorkspace, allProjects)}
+            onEdit={(workspace) => setWorkspaceModal({ mode: 'edit', workspace })}
+            onOpenProject={handleOpenProject}
+          />
+        ) : null}
+
+        <AnimatePresence mode="sync" initial={false}>
           {!isMinimalView ? (
             <>
               <motion.div
                 key="dashboard-groups-section"
-                layout
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 className={showGroupsFirst ? '' : 'order-3'}
               >
                 <DashboardGroupsSection
                   groups={groups}
                   projects={projects}
                   editingGroupId={editingGroupId}
+                  dndActiveGroupId={dndActiveGroupId}
                   onEditingGroupIdChange={setEditingGroupId}
+                  onDndActiveGroupIdChange={setDndActiveGroupId}
                   onCreateGroup={createGroup}
                   onUpdateGroup={updateGroup}
                   onDeleteGroup={deleteGroup}
@@ -164,12 +212,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
                 />
               </motion.div>
 
-              <motion.div
-                key="dashboard-order-separator"
-                layout
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                className="order-2"
-              >
+              <motion.div key="dashboard-order-separator" className="order-2">
                 <DashboardSectionSeparator />
               </motion.div>
             </>
@@ -177,8 +220,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
 
           <motion.div
             key="dashboard-projects-section"
-            layout
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className={!isMinimalView && showGroupsFirst ? 'order-3' : ''}
           >
             <DashboardProjectsSection
@@ -200,6 +241,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
             />
           </motion.div>
         </AnimatePresence>
+
+        {!isMinimalView ? <DashboardFooter /> : null}
       </div>
 
       <SettingsDrawer
@@ -232,6 +275,39 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
           setRaycastTarget(null);
           useSettingsDrawerStore.getState().open();
         }}
+      />
+
+      <EnvIndexDrawer
+        open={envIndexOpen}
+        onClose={closeEnvIndex}
+        projects={allProjects}
+        initialProjectId={envIndexProjectId}
+      />
+
+      <WorkspaceModal
+        open={Boolean(workspaceModal)}
+        mode={workspaceModal?.mode ?? 'create'}
+        projects={allProjects}
+        initial={workspaceModal?.workspace}
+        onClose={() => setWorkspaceModal(null)}
+        onSave={async (payload) => {
+          if (workspaceModal?.mode === 'edit' && workspaceModal.workspace) {
+            await updateWorkspace({ ...workspaceModal.workspace, ...payload });
+          } else {
+            const created = await createWorkspace(payload);
+            setActiveWorkspaceId(created.id);
+          }
+        }}
+        onDelete={
+          workspaceModal?.mode === 'edit' && workspaceModal.workspace
+            ? async () => {
+                const id = workspaceModal.workspace!.id;
+                if (activeWorkspaceId === id) setActiveWorkspaceId(null);
+                await deleteWorkspace(id);
+                setWorkspaceModal(null);
+              }
+            : undefined
+        }
       />
     </DndContext>
   );

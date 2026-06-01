@@ -122,3 +122,40 @@ export interface RaycastLauncherResult {
   filePath: string;
   overwritten: boolean;
 }
+
+/** One variable from a project `.env*` file or the OS process environment (never persisted in hub JSON). */
+export type EnvVarSource = 'project' | 'system';
+
+export const SYSTEM_ENV_PROJECT_ID = '__system__';
+
+export interface EnvVarEntry {
+  projectId: string;
+  projectName: string;
+  projectPath: string;
+  fileName: string;
+  filePath: string;
+  key: string;
+  value: string;
+  lineNumber: number;
+  /** True for `.env.example` and similar non-secret templates. */
+  isExample: boolean;
+  /** `project` (default) or `system` — vars from the running process / OS. */
+  source?: EnvVarSource;
+}
+
+export type EnvCopyFormat = 'key' | 'value' | 'line';
+
+export type WorkspaceColor = 'green' | 'blue' | 'yellow' | 'red';
+export type WorkspaceIcon = 'briefcase' | 'building' | 'layers' | 'folder';
+
+/** Saved filter/collection of projects (client, prefix, etc.). */
+export interface Workspace {
+  id: string;
+  name: string;
+  matchQuery: string;
+  projectIds: string[];
+  includePathMatch: boolean;
+  color?: WorkspaceColor;
+  icon?: WorkspaceIcon;
+  createdAt: string;
+}

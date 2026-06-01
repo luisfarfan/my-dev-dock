@@ -11,9 +11,12 @@ import {
   Command,
   Trash2,
   GripVertical,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
+import { copyTextToClipboard } from '@/lib/clipboard';
 
 export interface ProjectCardProps {
   project: Project;
@@ -122,15 +125,16 @@ function gitStatusLabel(status: string, t: (key: string) => string): string {
 /** Max height ~2 rows of stack chips in detail view; extra scrolls inside. */
 const DETAIL_STACK_SCROLL_MAX_H = 'max-h-[4.75rem]';
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({
+export const ProjectCard = React.memo(function ProjectCard({
   project,
   onOpenInEditor,
   onRemove,
   onCreateRaycastLauncher,
   compact = false,
   isDraggable = false,
-}) => {
+}: ProjectCardProps) {
   const { t } = useTranslation();
+  const [pathCopied, setPathCopied] = React.useState(false);
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `project-${project.id}`,
     data: { project, id: project.id },
@@ -156,6 +160,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       default:
         return 'blue';
     }
+  };
+
+  const handleCopyPath = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    await copyTextToClipboard(project.path);
+    setPathCopied(true);
+    window.setTimeout(() => setPathCopied(false), 1500);
   };
 
   return (
@@ -295,6 +306,16 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               </div>
 
               <div className="flex w-full min-w-0 justify-end gap-1.5 opacity-0 translate-y-2 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                <NeonButton
+                  variant={pathCopied ? 'primary' : 'ghost'}
+                  size="icon"
+                  className="h-8 w-8 shrink-0"
+                  title={pathCopied ? t('projectCard.pathCopied') : t('projectCard.copyPath')}
+                  aria-label={t('projectCard.copyPath')}
+                  onClick={(e) => void handleCopyPath(e)}
+                >
+                  {pathCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                </NeonButton>
                 <div className="group/raycast relative">
                   <NeonButton
                     variant="ghost"
@@ -341,9 +362,19 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         )}
 
         {compact && (
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
-              className="w-6 h-6 rounded-md flex items-center justify-center text-neon-red/40 hover:bg-neon-red/10 hover:text-neon-red transition-all"
+              type="button"
+              className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-all hover:bg-muted/60 hover:text-primary"
+              title={pathCopied ? t('projectCard.pathCopied') : t('projectCard.copyPath')}
+              aria-label={t('projectCard.copyPath')}
+              onClick={(e) => void handleCopyPath(e)}
+            >
+              {pathCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            </button>
+            <button
+              type="button"
+              className="flex h-6 w-6 items-center justify-center rounded-md text-neon-red/40 transition-all hover:bg-neon-red/10 hover:text-neon-red"
               onClick={(e) => {
                 e.stopPropagation();
                 onRemove(project.id);
@@ -356,4 +387,4 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       </GlassCard>
     </div>
   );
-};
+});

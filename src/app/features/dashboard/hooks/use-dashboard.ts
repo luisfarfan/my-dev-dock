@@ -1,18 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useActiveWorkspaceStore } from '@/app/store/use-active-workspace-store';
 import { useProjectStore } from '@/app/store/use-project-store';
 import { projectSortSubtitle, sortProjectsBySettings } from '@/lib/project-sort';
 
 export function useDashboard() {
   const { t, i18n } = useTranslation();
-  const { 
-    projects, 
-    groups, 
+  const {
+    projects,
+    groups,
+    workspaces,
     settings,
     installedEditors,
     isMinimalView,
-    isLoading, 
-    fetchData, 
+    isLoading,
+    fetchData,
     fetchInstalledEditors,
     detectRaycastInstallation,
     setDefaultEditor,
@@ -34,13 +36,38 @@ export function useDashboard() {
     deleteGroup,
     addProjectToGroup,
     removeProjectFromGroup,
+
+    createWorkspace,
+    updateWorkspace,
+    deleteWorkspace,
   } = useProjectStore();
+
+  const activeWorkspaceId = useActiveWorkspaceStore((s) => s.activeWorkspaceId);
+  const setActiveWorkspaceId = useActiveWorkspaceStore((s) => s.setActiveWorkspaceId);
+
+  const activeWorkspace = useMemo(
+    () => workspaces.find((w) => w.id === activeWorkspaceId) ?? null,
+    [workspaces, activeWorkspaceId],
+  );
+
+  useEffect(() => {
+    if (activeWorkspaceId && !workspaces.some((w) => w.id === activeWorkspaceId)) {
+      setActiveWorkspaceId(null);
+    }
+  }, [activeWorkspaceId, workspaces, setActiveWorkspaceId]);
+
+  const workspaceProjects = useMemo(() => {
+    if (!activeWorkspace) return [];
+    const idSet = new Set(activeWorkspace.projectIds);
+    const items = projects.filter((p) => idSet.has(p.id));
+    if (!settings) return items;
+    return sortProjectsBySettings(items, settings);
+  }, [activeWorkspace, projects, settings]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  
-  // Group UI states
+
   const [isCreatingGroup, setIsCreatingGroup] = useState(false);
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
   const [dndActiveGroupId, setDndActiveGroupId] = useState<string | null>(null);
@@ -54,12 +81,14 @@ export function useDashboard() {
 
   const filteredProjects = useMemo(() => {
     const q = debouncedSearchQuery.toLowerCase();
-    const filtered = projects.filter(
+    let filtered = projects.filter(
       (p) => p.name.toLowerCase().includes(q) || p.path.toLowerCase().includes(q),
     );
     if (!settings) return filtered;
     return sortProjectsBySettings(filtered, settings);
   }, [projects, debouncedSearchQuery, settings]);
+
+  const totalProjectCount = projects.length;
 
   const projectSortLabel = useMemo(
     () => (settings ? projectSortSubtitle(settings, t) : ''),
@@ -68,8 +97,15 @@ export function useDashboard() {
 
   return {
     projects: filteredProjects,
+    allProjects: projects,
+    totalProjectCount,
     projectSortLabel,
     groups,
+    workspaces,
+    activeWorkspace,
+    activeWorkspaceId,
+    setActiveWorkspaceId,
+    workspaceProjects,
     settings,
     installedEditors,
     isLoading,
@@ -105,5 +141,9 @@ export function useDashboard() {
     setEditingGroupId,
     dndActiveGroupId,
     setDndActiveGroupId,
+
+    createWorkspace,
+    updateWorkspace,
+    deleteWorkspace,
   };
 }

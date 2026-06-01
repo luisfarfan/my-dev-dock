@@ -1,6 +1,7 @@
 import {
   Project,
   Group,
+  Workspace,
   AppSettings,
   EditorType,
   RaycastLauncherInput,
@@ -28,6 +29,10 @@ export interface ProjectService {
   syncProject(id: string): Promise<Project>;
   detectRaycastInstallation(): Promise<boolean>;
   exportRaycastLauncher(input: RaycastLauncherInput): Promise<RaycastLauncherResult>;
+  getWorkspaces(): Promise<Workspace[]>;
+  createWorkspace(input: Omit<Workspace, 'id' | 'createdAt'>): Promise<Workspace>;
+  updateWorkspace(workspace: Workspace): Promise<Workspace>;
+  deleteWorkspace(id: string): Promise<void>;
   setWidgetMode(enabled: boolean): Promise<void>;
 }
 

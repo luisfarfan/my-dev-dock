@@ -10,7 +10,9 @@ export interface DashboardGroupsSectionProps {
   groups: Group[];
   projects: Project[];
   editingGroupId: string | null;
+  dndActiveGroupId: string | null;
   onEditingGroupIdChange: (id: string | null) => void;
+  onDndActiveGroupIdChange: (id: string | null) => void;
   onCreateGroup: () => Promise<string>;
   onUpdateGroup: (group: Group) => void;
   onDeleteGroup: (groupId: string) => void;
@@ -23,7 +25,9 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
   groups,
   projects,
   editingGroupId,
+  dndActiveGroupId,
   onEditingGroupIdChange,
+  onDndActiveGroupIdChange,
   onCreateGroup,
   onUpdateGroup,
   onDeleteGroup,
@@ -64,21 +68,20 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <AnimatePresence mode="popLayout">
-          {groups.map((group, idx) => (
+        <AnimatePresence mode="sync">
+          {groups.map((group) => (
             <motion.div
               key={group.id}
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ delay: idx * 0.1 }}
-              layout
+              initial={false}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.12 } }}
+              transition={{ duration: 0.15 }}
             >
               <GroupSpace
                 group={group}
                 projectsInGroup={projects.filter((p) => group.projectIds.includes(p.id))}
                 isEditingName={editingGroupId === group.id}
-                isDndActive={true}
+                isDndActive={dndActiveGroupId === group.id}
                 onRename={(newName) => {
                   onUpdateGroup({ ...group, name: newName });
                   onEditingGroupIdChange(null);
@@ -87,7 +90,9 @@ export const DashboardGroupsSection: React.FC<DashboardGroupsSectionProps> = ({
                 onEditToggle={() =>
                   onEditingGroupIdChange(editingGroupId === group.id ? null : group.id)
                 }
-                onDndToggle={() => console.log('dnd toggled')}
+                onDndToggle={() =>
+                  onDndActiveGroupIdChange(dndActiveGroupId === group.id ? null : group.id)
+                }
                 onRemoveProject={(pid) => onRemoveProjectFromGroup(group.id, pid)}
                 onLaunch={() => onLaunchGroup(group.id)}
                 onCreateRaycastLauncher={() => onCreateRaycastLauncher(group)}

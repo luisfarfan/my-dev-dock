@@ -1,6 +1,7 @@
 import {
   Project,
   Group,
+  Workspace,
   AppSettings,
   EditorType,
   RaycastLauncherInput,
@@ -61,6 +62,19 @@ const MOCK_GROUPS: Group[] = [
     name: 'Core Services',
     projectIds: ['1', '3'],
     color: '#00FF88',
+  },
+];
+
+const MOCK_WORKSPACES: Workspace[] = [
+  {
+    id: 'w1',
+    name: 'Dev Hub',
+    matchQuery: 'dev',
+    projectIds: ['1'],
+    includePathMatch: false,
+    color: 'green',
+    icon: 'briefcase',
+    createdAt: new Date().toISOString(),
   },
 ];
 
@@ -221,6 +235,32 @@ export class MockProjectService implements ProjectService {
 
   async setWidgetMode(_enabled: boolean): Promise<void> {
     return;
+  }
+
+  async getWorkspaces(): Promise<Workspace[]> {
+    return [...MOCK_WORKSPACES];
+  }
+
+  async createWorkspace(input: Omit<Workspace, 'id' | 'createdAt'>): Promise<Workspace> {
+    const workspace: Workspace = {
+      ...input,
+      id: Math.random().toString(36).substring(7),
+      createdAt: new Date().toISOString(),
+    };
+    MOCK_WORKSPACES.push(workspace);
+    return workspace;
+  }
+
+  async updateWorkspace(workspace: Workspace): Promise<Workspace> {
+    const idx = MOCK_WORKSPACES.findIndex((w) => w.id === workspace.id);
+    if (idx === -1) throw new Error('Workspace not found');
+    MOCK_WORKSPACES[idx] = workspace;
+    return workspace;
+  }
+
+  async deleteWorkspace(id: string): Promise<void> {
+    const idx = MOCK_WORKSPACES.findIndex((w) => w.id === id);
+    if (idx !== -1) MOCK_WORKSPACES.splice(idx, 1);
   }
 }
 
