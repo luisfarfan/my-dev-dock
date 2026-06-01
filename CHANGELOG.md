@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/luisfarfan/my-dev-dock/compare/v1.1.0...v1.2.0) (2026-06-01)
+
+
+### Features
+
+* add workspaces, env index, and editor improvements ([213831e](https://github.com/luisfarfan/my-dev-dock/commit/213831e5b9b26b9bf54082fee3d4da9d3bbac02c))
+
 # [1.1.0](https://github.com/luisfarfan/my-dev-dock/compare/v1.0.0...v1.1.0) (2026-04-08)
 
 
