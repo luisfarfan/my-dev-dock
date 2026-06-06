@@ -14,10 +14,17 @@ import {
   useDashboard,
 } from '@/app/features/dashboard';
 import { EnvIndexDrawer } from '@/app/features/env-index';
-import { WorkspaceModal, WorkspacePanel, WorkspaceStrip } from '@/app/features/workspaces';
+import { RunProcessesDrawer } from '@/app/features/run';
+import {
+  WorkspaceModal,
+  WorkspacePanel,
+  WorkspaceRunDrawer,
+  WorkspaceStrip,
+} from '@/app/features/workspaces';
 import { countPendingWorkspaceMatches } from '@/lib/workspace-suggestions';
 import type { Workspace } from '@org/models';
 import { useEnvIndexDrawerStore } from '@/app/store/use-env-index-drawer-store';
+import { useRunSessionsStore } from '@/app/store/use-run-sessions-store';
 import { useSettingsDrawerStore } from '@/app/store/use-settings-drawer-store';
 
 export interface DashboardPageProps {
@@ -43,6 +50,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
   const envIndexProjectId = useEnvIndexDrawerStore((s) => s.filterProjectId);
   const closeEnvIndex = useEnvIndexDrawerStore((s) => s.close);
   const openEnvIndex = useEnvIndexDrawerStore((s) => s.open);
+  const runDrawerOpen = useRunSessionsStore((s) => s.drawerOpen);
+  const closeRunDrawer = useRunSessionsStore((s) => s.closeDrawer);
+  const openRunDrawer = useRunSessionsStore((s) => s.openDrawer);
+  const runSessions = useRunSessionsStore((s) => s.sessions);
+  const runningProcessCount = runSessions.filter((s) => s.status === 'running').length;
 
   const {
     projects,
@@ -91,6 +103,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
     mode: 'create' | 'edit';
     workspace: Workspace | null;
   } | null>(null);
+  const [workspacePreflightOpen, setWorkspacePreflightOpen] = React.useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -166,6 +179,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
           onToggleMinimalView={() => setMinimalView(!isMinimalView)}
           onOpenSettings={onOpenSettings}
           onOpenEnvIndex={() => openEnvIndex()}
+          onOpenRunProcesses={() => openRunDrawer()}
+          runningProcessCount={runningProcessCount}
         />
 
         {!isMinimalView ? (
@@ -186,6 +201,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
             pendingCount={countPendingWorkspaceMatches(activeWorkspace, allProjects)}
             onEdit={(workspace) => setWorkspaceModal({ mode: 'edit', workspace })}
             onOpenProject={handleOpenProject}
+            onRunWorkspace={() => setWorkspacePreflightOpen(true)}
           />
         ) : null}
 
@@ -283,6 +299,17 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) 
         projects={allProjects}
         initialProjectId={envIndexProjectId}
       />
+
+      <RunProcessesDrawer open={runDrawerOpen} onClose={closeRunDrawer} />
+
+      {activeWorkspace ? (
+        <WorkspaceRunDrawer
+          open={workspacePreflightOpen}
+          onClose={() => setWorkspacePreflightOpen(false)}
+          workspace={activeWorkspace}
+          projects={workspaceProjects}
+        />
+      ) : null}
 
       <WorkspaceModal
         open={Boolean(workspaceModal)}

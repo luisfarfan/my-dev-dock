@@ -1,4 +1,4 @@
-import { ArrowUpDown, Dock, KeyRound, LayoutGrid, List, Minimize2, Settings } from 'lucide-react';
+import { ArrowUpDown, Dock, KeyRound, LayoutGrid, List, Minimize2, Settings, TerminalSquare } from 'lucide-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { NeonButton, SearchInput } from '@org/ui-kit';
@@ -14,6 +14,8 @@ export interface DashboardHubHeaderProps {
   onToggleMinimalView: () => void;
   onOpenSettings: () => void;
   onOpenEnvIndex: () => void;
+  onOpenRunProcesses: () => void;
+  runningProcessCount?: number;
 }
 
 export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
@@ -27,6 +29,8 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
   onToggleMinimalView,
   onOpenSettings,
   onOpenEnvIndex,
+  onOpenRunProcesses,
+  runningProcessCount = 0,
 }) => {
   const { t } = useTranslation();
   const headerRef = React.useRef<HTMLElement | null>(null);
@@ -160,6 +164,21 @@ export const DashboardHubHeader: React.FC<DashboardHubHeaderProps> = ({
             </div>
           </>
         ) : null}
+        <NeonButton
+          variant="ghost"
+          size="icon"
+          className="relative w-12 h-12 border border-border group hover:border-neon-yellow/50 transition-colors"
+          onClick={onOpenRunProcesses}
+          title={t('runProcesses.title')}
+          aria-label={t('runProcesses.title')}
+        >
+          <TerminalSquare className="w-5 h-5 text-muted-foreground group-hover:text-neon-yellow transition-colors" />
+          {runningProcessCount > 0 ? (
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full border border-neon-yellow/50 bg-neon-yellow/20 px-1 text-[9px] font-black text-neon-yellow">
+              {runningProcessCount}
+            </span>
+          ) : null}
+        </NeonButton>
         <NeonButton
           variant="ghost"
           size="icon"

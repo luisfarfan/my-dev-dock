@@ -10,14 +10,18 @@ import {
   FolderKanban,
   GitBranch,
   Layers,
+  Loader2,
   Pencil,
+  Play,
 } from 'lucide-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Project, Workspace, WorkspaceIcon } from '@org/models';
+import type { Project, RunCommandResolution, Workspace, WorkspaceIcon } from '@org/models';
 import { GlassCard, GlowBadge, NeonButton } from '@org/ui-kit';
 import { useWorkspacePanelStore } from '@/app/store/use-workspace-panel-store';
 import { copyTextToClipboard } from '@/lib/clipboard';
+import { getRunService } from '@org/services';
+import { useRunSessionsStore } from '@/app/store/use-run-sessions-store';
 import { WORKSPACE_COLOR_STYLES } from '@/lib/workspace-suggestions';
 
 const ICON_MAP: Record<WorkspaceIcon, typeof Briefcase> = {
@@ -33,6 +37,7 @@ export interface WorkspacePanelProps {
   pendingCount: number;
   onEdit: (workspace: Workspace) => void;
   onOpenProject: (path: string) => void;
+  onRunWorkspace: () => void;
 }
 
 export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({
@@ -41,15 +46,58 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({
   pendingCount,
   onEdit,
   onOpenProject,
+  onRunWorkspace,
 }) => {
   const { t } = useTranslation();
   const expanded = useWorkspacePanelStore((s) => s.expanded);
   const toggleExpanded = useWorkspacePanelStore((s) => s.toggleExpanded);
+  const [resolutions, setResolutions] = React.useState<Record<string, RunCommandResolution>>({});
+  const [runningId, setRunningId] = React.useState<string | null>(null);
 
   const color = workspace.color ?? 'green';
   const styles = WORKSPACE_COLOR_STYLES[color];
   const Icon = ICON_MAP[workspace.icon ?? 'briefcase'];
   const panelId = `workspace-panel-${workspace.id}`;
+
+  React.useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const runService = getRunService();
+      const entries = await Promise.all(
+        projects.map(async (project) => {
+          const resolution = await runService.resolveRunCommand(project.path, project.runCommand);
+          return [project.id, resolution] as const;
+        }),
+      );
+      if (!cancelled) {
+        setResolutions(Object.fromEntries(entries));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [projects]);
+
+  const runnableCount = projects.filter((p) => resolutions[p.id]?.command).length;
+
+  const refreshRunSessions = useRunSessionsStore((s) => s.refreshSessions);
+  const openRunDrawer = useRunSessionsStore((s) => s.openDrawer);
+
+  const handleRunProject = async (project: Project) => {
+    const resolution = resolutions[project.id];
+    if (!resolution?.command) {
+      onRunWorkspace();
+      return;
+    }
+    setRunningId(project.id);
+    try {
+      const result = await getRunService().runProject(project.id);
+      await refreshRunSessions();
+      openRunDrawer(result.sessionId);
+    } finally {
+      setRunningId(null);
+    }
+  };
 
   return (
     <section
@@ -72,6 +120,11 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({
             <GlowBadge size="xs" color="blue">
               {t('workspaces.panel.projectCount', { count: projects.length })}
             </GlowBadge>
+            {runnableCount > 0 ? (
+              <GlowBadge size="xs" color="yellow">
+                {t('workspaces.panel.runnableCount', { count: runnableCount })}
+              </GlowBadge>
+            ) : null}
             {pendingCount > 0 ? (
               <GlowBadge size="xs" color="green">
                 {t('workspaces.panel.pendingMatches', { count: pendingCount })}
@@ -83,7 +136,18 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex shrink-0 flex-wrap items-center gap-1">
+          {projects.length > 0 ? (
+            <NeonButton
+              variant="primary"
+              size="sm"
+              className="h-9 gap-1.5 border-neon-yellow/40 bg-neon-yellow/15 px-3 text-[10px] font-black uppercase tracking-wider text-neon-yellow hover:bg-neon-yellow/25"
+              onClick={onRunWorkspace}
+            >
+              <Play className="h-3.5 w-3.5 fill-current" />
+              {t('workspaces.panel.runWorkspace')}
+            </NeonButton>
+          ) : null}
           <NeonButton
             variant="ghost"
             size="icon"
@@ -157,7 +221,10 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({
                     <WorkspaceProjectTile
                       key={project.id}
                       project={project}
+                      resolution={resolutions[project.id]}
+                      isRunning={runningId === project.id}
                       onOpen={() => onOpenProject(project.path)}
+                      onRun={() => void handleRunProject(project)}
                     />
                   ))}
                 </div>
@@ -172,13 +239,20 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({
 
 function WorkspaceProjectTile({
   project,
+  resolution,
+  isRunning,
   onOpen,
+  onRun,
 }: {
   project: Project;
+  resolution?: RunCommandResolution;
+  isRunning: boolean;
   onOpen: () => void;
+  onRun: () => void;
 }) {
   const { t } = useTranslation();
   const [pathCopied, setPathCopied] = React.useState(false);
+  const canRun = Boolean(resolution?.command);
 
   const handleCopyPath = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -190,7 +264,7 @@ function WorkspaceProjectTile({
   return (
     <GlassCard
       hoverable
-      className={`group flex flex-col gap-3 border-border/70 bg-card/40 p-4 transition-colors hover:border-primary/40`}
+      className="group flex flex-col gap-3 border-border/70 bg-card/40 p-4 transition-colors hover:border-neon-yellow/30"
     >
       <div className="min-w-0 flex-1">
         <h3 className="truncate text-sm font-black uppercase tracking-wide text-foreground">
@@ -205,6 +279,17 @@ function WorkspaceProjectTile({
             <span className="truncate">{project.git.branch}</span>
           </div>
         ) : null}
+        <div className="mt-2 rounded-lg border border-border/70 bg-muted/30 px-2 py-1.5">
+          <p className="font-mono text-[10px] text-foreground/90 truncate" title={resolution?.command}>
+            {resolution?.command ?? t('workspaces.panel.noCommand')}
+          </p>
+          {resolution?.scriptName ? (
+            <p className="mt-0.5 text-[9px] text-muted-foreground">
+              {resolution.scriptName}
+              {resolution.packageManager ? ` · ${resolution.packageManager}` : ''}
+            </p>
+          ) : null}
+        </div>
       </div>
       <div className="flex gap-2">
         <NeonButton
@@ -218,12 +303,26 @@ function WorkspaceProjectTile({
           {pathCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
         </NeonButton>
         <NeonButton
-          variant="outline"
+          variant="primary"
           size="sm"
-          className="h-9 flex-1 gap-2 text-[10px] font-black uppercase tracking-wider group-hover:border-primary/50"
+          className="h-9 flex-1 gap-1.5 border-neon-yellow/40 bg-neon-yellow/15 text-[10px] font-black uppercase tracking-wider text-neon-yellow hover:bg-neon-yellow/25 disabled:opacity-40"
+          disabled={!canRun || isRunning}
+          onClick={onRun}
+        >
+          {isRunning ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Play className="h-3.5 w-3.5 fill-current" />
+          )}
+          {t('workspaces.panel.run')}
+        </NeonButton>
+        <NeonButton
+          variant="outline"
+          size="icon"
+          className="h-9 w-9 shrink-0"
+          title={t('workspaces.panel.open')}
           onClick={onOpen}
         >
-          {t('workspaces.panel.open')}
           <ArrowUpRight className="h-3.5 w-3.5" />
         </NeonButton>
       </div>

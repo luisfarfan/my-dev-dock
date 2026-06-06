@@ -4,12 +4,15 @@ use serde_json::Value;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 use tauri::Manager;
 use tauri::{LogicalPosition, LogicalSize, Position, Size};
 use walkdir::WalkDir;
+
+mod embedded_terminal;
+mod run_terminal;
 
 // --- DTOs (JSON camelCase para el frontend) ---------------------------------
 
@@ -39,6 +42,9 @@ pub struct ProjectDetails {
     pub last_opened_at: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub raycast_launcher_path: Option<String>,
+    /// User override for workspace terminal run (e.g. `bun run dev`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub run_command: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -78,6 +84,18 @@ pub struct AppSettingsDto {
     pub sort_direction: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub raycast_scripts_path: Option<String>,
+    #[serde(default = "default_terminal_id")]
+    pub default_terminal: String,
+    #[serde(default = "default_minimize_terminal_on_run")]
+    pub minimize_terminal_on_run: bool,
+}
+
+fn default_terminal_id() -> String {
+    "terminal".to_string()
+}
+
+fn default_minimize_terminal_on_run() -> bool {
+    true
 }
 
 impl Default for AppSettingsDto {
@@ -89,6 +107,8 @@ impl Default for AppSettingsDto {
             sort_by: "lastOpenedAt".to_string(),
             sort_direction: "desc".to_string(),
             raycast_scripts_path: None,
+            default_terminal: default_terminal_id(),
+            minimize_terminal_on_run: default_minimize_terminal_on_run(),
         }
     }
 }
@@ -102,6 +122,8 @@ pub struct PartialAppSettings {
     pub sort_by: Option<String>,
     pub sort_direction: Option<String>,
     pub raycast_scripts_path: Option<String>,
+    pub default_terminal: Option<String>,
+    pub minimize_terminal_on_run: Option<bool>,
 }
 
 #[derive(Deserialize)]
@@ -165,6 +187,7 @@ pub struct AppState {
     settings: Mutex<AppSettingsDto>,
     data_file: PathBuf,
     widget_restore_bounds: Mutex<Option<WindowBounds>>,
+    run_sessions: Arc<Mutex<embedded_terminal::RunSessionStore>>,
 }
 
 #[derive(Debug, Clone)]
@@ -227,6 +250,7 @@ impl AppState {
             settings: Mutex::new(persisted.settings),
             data_file,
             widget_restore_bounds: Mutex::new(None),
+            run_sessions: Arc::new(Mutex::new(embedded_terminal::RunSessionStore::new())),
         }
     }
 }
@@ -560,6 +584,7 @@ fn build_project_details(path: &Path) -> Option<ProjectDetails> {
         added_at: Local::now().to_rfc3339(),
         last_opened_at: None,
         raycast_launcher_path: None,
+        run_command: None,
     })
 }
 
@@ -1014,6 +1039,15 @@ fn update_settings(
         let trimmed = v.trim().to_string();
         guard.raycast_scripts_path = if trimmed.is_empty() { None } else { Some(trimmed) };
     }
+    if let Some(v) = settings.default_terminal {
+        let trimmed = v.trim().to_string();
+        if !trimmed.is_empty() {
+            guard.default_terminal = trimmed;
+        }
+    }
+    if let Some(v) = settings.minimize_terminal_on_run {
+        guard.minimize_terminal_on_run = v;
+    }
     let updated = guard.clone();
     drop(guard);
     persist_state(&state)?;
@@ -1023,6 +1057,230 @@ fn update_settings(
 #[tauri::command]
 fn detect_raycast_installation() -> bool {
     is_raycast_installed()
+}
+
+#[tauri::command]
+fn get_installed_terminals() -> Result<Vec<run_terminal::TerminalInfo>, String> {
+    Ok(run_terminal::list_terminals())
+}
+
+#[tauri::command]
+fn test_terminal_app(terminal_id: String, minimize: Option<bool>) -> Result<(), String> {
+    run_terminal::test_terminal(&terminal_id, minimize.unwrap_or(true))
+}
+
+#[tauri::command]
+fn resolve_project_run_command(
+    path: String,
+    custom: Option<String>,
+) -> Result<run_terminal::RunCommandResolution, String> {
+    Ok(run_terminal::resolve_run_command(&path, custom.as_deref()))
+}
+
+#[tauri::command]
+fn set_project_run_command(
+    state: tauri::State<'_, AppState>,
+    project_id: String,
+    run_command: Option<String>,
+) -> Result<ProjectDetails, String> {
+    let mut guard = state.projects.lock().map_err(|e| e.to_string())?;
+    let project = guard
+        .iter_mut()
+        .find(|p| p.id == project_id)
+        .ok_or_else(|| "Project not found".to_string())?;
+    project.run_command = run_command
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty());
+    let updated = project.clone();
+    drop(guard);
+    persist_state(&state)?;
+    Ok(updated)
+}
+
+fn run_single_project_terminal(
+    app: &tauri::AppHandle,
+    state: &AppState,
+    project_id: &str,
+) -> Result<run_terminal::RunProjectResult, String> {
+    let project = {
+        let projects = state.projects.lock().map_err(|e| e.to_string())?;
+        projects
+            .iter()
+            .find(|p| p.id == project_id)
+            .ok_or_else(|| "Project not found".to_string())?
+            .clone()
+    };
+
+    let resolution =
+        run_terminal::resolve_run_command(&project.path, project.run_command.as_deref());
+    let command = resolution
+        .command
+        .ok_or_else(|| "No run command configured for this project".to_string())?;
+
+    match state
+        .run_sessions
+        .lock()
+        .map_err(|e| e.to_string())?
+        .spawn(
+            app,
+            project.id.clone(),
+            project.name.clone(),
+            project.path.clone(),
+            command.clone(),
+        ) {
+        Ok(session) => Ok(run_terminal::RunProjectResult {
+            project_id: project.id,
+            project_name: project.name,
+            command,
+            terminal_id: "embedded".to_string(),
+            session_id: Some(session.id),
+            success: true,
+            error: None,
+        }),
+        Err(err) => Ok(run_terminal::RunProjectResult {
+            project_id: project.id,
+            project_name: project.name,
+            command,
+            terminal_id: "embedded".to_string(),
+            session_id: None,
+            success: false,
+            error: Some(err),
+        }),
+    }
+}
+
+#[tauri::command]
+fn run_project_in_terminal(
+    app: tauri::AppHandle,
+    state: tauri::State<'_, AppState>,
+    project_id: String,
+) -> Result<run_terminal::RunProjectResult, String> {
+    run_single_project_terminal(&app, &state, &project_id)
+}
+
+#[tauri::command]
+fn run_projects_in_terminal(
+    app: tauri::AppHandle,
+    state: tauri::State<'_, AppState>,
+    project_ids: Vec<String>,
+) -> Result<Vec<run_terminal::RunProjectResult>, String> {
+    let (delay_ms, projects) = {
+        let guard = state.projects.lock().map_err(|e| e.to_string())?;
+        let settings = state.settings.lock().map_err(|e| e.to_string())?;
+        let mut items = Vec::new();
+        for id in &project_ids {
+            if let Some(p) = guard.iter().find(|x| x.id == *id) {
+                let resolution =
+                    run_terminal::resolve_run_command(&p.path, p.run_command.as_deref());
+                if let Some(cmd) = resolution.command {
+                    items.push((p.id.clone(), p.name.clone(), p.path.clone(), cmd));
+                }
+            }
+        }
+        (settings.launch_delay, items)
+    };
+
+    if projects.is_empty() {
+        return Err("No runnable projects in selection".to_string());
+    }
+
+    let spawn_results = embedded_terminal::spawn_projects_with_delay(
+        state.run_sessions.clone(),
+        app,
+        delay_ms,
+        projects,
+    );
+
+    Ok(spawn_results
+        .into_iter()
+        .map(|result| match result {
+            Ok(session) => run_terminal::RunProjectResult {
+                project_id: session.project_id.clone(),
+                project_name: session.project_name.clone(),
+                command: session.command.clone(),
+                terminal_id: "embedded".to_string(),
+                session_id: Some(session.id),
+                success: true,
+                error: None,
+            },
+            Err(err) => run_terminal::RunProjectResult {
+                project_id: String::new(),
+                project_name: String::new(),
+                command: String::new(),
+                terminal_id: "embedded".to_string(),
+                session_id: None,
+                success: false,
+                error: Some(err),
+            },
+        })
+        .collect())
+}
+
+#[tauri::command]
+fn list_run_sessions(
+    state: tauri::State<'_, AppState>,
+) -> Result<Vec<embedded_terminal::RunSessionInfo>, String> {
+    Ok(state
+        .run_sessions
+        .lock()
+        .map_err(|e| e.to_string())?
+        .list())
+}
+
+#[tauri::command]
+async fn kill_run_session(
+    state: tauri::State<'_, AppState>,
+    session_id: String,
+) -> Result<(), String> {
+    let store = state.run_sessions.clone();
+    tauri::async_runtime::spawn_blocking(move || {
+        store
+            .lock()
+            .map_err(|e| e.to_string())?
+            .kill(&session_id)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
+async fn kill_all_run_sessions(state: tauri::State<'_, AppState>) -> Result<(), String> {
+    let store = state.run_sessions.clone();
+    tauri::async_runtime::spawn_blocking(move || {
+        store
+            .lock()
+            .map_err(|e| e.to_string())?
+            .kill_all_running()
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
+fn write_run_session(
+    state: tauri::State<'_, AppState>,
+    session_id: String,
+    data: String,
+) -> Result<(), String> {
+    state
+        .run_sessions
+        .lock()
+        .map_err(|e| e.to_string())?
+        .write_input(&session_id, &data)
+}
+
+#[tauri::command]
+fn resize_run_session(
+    state: tauri::State<'_, AppState>,
+    session_id: String,
+    cols: u16,
+    rows: u16,
+) -> Result<(), String> {
+    state
+        .run_sessions
+        .lock()
+        .map_err(|e| e.to_string())?
+        .resize(&session_id, cols, rows)
 }
 
 #[tauri::command]
@@ -1041,9 +1299,11 @@ async fn register_project(
     if let Some(i) = guard.iter().position(|p| p.path == details.path) {
         let prev_opened = guard[i].last_opened_at.clone();
         let prev_raycast = guard[i].raycast_launcher_path.clone();
+        let prev_run = guard[i].run_command.clone();
         guard[i] = details.clone();
         guard[i].last_opened_at = prev_opened;
         guard[i].raycast_launcher_path = prev_raycast;
+        guard[i].run_command = prev_run;
     } else {
         guard.push(details.clone());
     }
@@ -1779,6 +2039,17 @@ pub fn run() {
             export_raycast_launcher,
             scan_env_vars,
             set_widget_mode,
+            get_installed_terminals,
+            test_terminal_app,
+            resolve_project_run_command,
+            set_project_run_command,
+            run_project_in_terminal,
+            run_projects_in_terminal,
+            list_run_sessions,
+            kill_run_session,
+            kill_all_run_sessions,
+            write_run_session,
+            resize_run_session,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

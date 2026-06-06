@@ -71,6 +71,58 @@ export interface Project {
   lastOpenedAt?: string;
   /** Path to last Raycast script exported for this project (for cleanup on remove) */
   raycastLauncherPath?: string;
+  /** User override for terminal run command (e.g. `bun run dev`). */
+  runCommand?: string;
+}
+
+export type TerminalId =
+  | 'iterm'
+  | 'warp'
+  | 'ghostty'
+  | 'wezterm'
+  | 'alacritty'
+  | 'kitty'
+  | 'terminal';
+
+export interface TerminalInfo {
+  id: TerminalId;
+  name: string;
+  installed: boolean;
+}
+
+export type RunCommandSource = 'custom' | 'detected' | 'none';
+export type RunCommandConfidence = 'high' | 'medium' | 'low';
+
+export interface RunCommandResolution {
+  command?: string;
+  scriptName?: string;
+  packageManager?: string;
+  source: RunCommandSource;
+  confidence: RunCommandConfidence;
+}
+
+export interface RunProjectResult {
+  projectId: string;
+  projectName: string;
+  command: string;
+  terminalId: string;
+  sessionId?: string;
+  success: boolean;
+  error?: string;
+}
+
+export type RunSessionStatus = 'running' | 'exited';
+
+export interface RunSession {
+  id: string;
+  projectId: string;
+  projectName: string;
+  command: string;
+  cwd: string;
+  pid?: number;
+  status: RunSessionStatus;
+  startedAt: string;
+  exitCode?: number;
 }
 
 /**
@@ -104,6 +156,8 @@ export interface AppSettings {
   sortBy: SortField | 'lastCommit';
   sortDirection: 'asc' | 'desc';
   raycastScriptsPath?: string;
+  defaultTerminal?: TerminalId;
+  minimizeTerminalOnRun?: boolean;
 }
 
 export type RaycastLauncherTargetType = 'project' | 'group';

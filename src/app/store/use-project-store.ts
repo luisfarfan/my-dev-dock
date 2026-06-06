@@ -9,7 +9,7 @@ import {
   WorkspaceColor,
   WorkspaceIcon,
 } from '@org/models';
-import { getProjectService, getSettingsService } from '@org/services';
+import { getProjectService, getRunService, getSettingsService } from '@org/services';
 import i18n from '@/app/i18n/i18n';
 import { broadcastAppSettingsChanged } from '@/lib/tauri-multi-window-sync';
 import { create } from 'zustand';
@@ -57,6 +57,7 @@ interface ProjectState {
   }) => Promise<Workspace>;
   updateWorkspace: (workspace: Workspace) => Promise<void>;
   deleteWorkspace: (id: string) => Promise<void>;
+  setProjectRunCommand: (projectId: string, runCommand?: string) => Promise<void>;
 }
 
 
@@ -360,6 +361,22 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   deleteWorkspace: async (id) => {
     await projectService.deleteWorkspace(id);
     set({ workspaces: get().workspaces.filter((w) => w.id !== id) });
+  },
+
+  setProjectRunCommand: async (projectId, runCommand) => {
+    const prevProjects = get().projects;
+    set({
+      projects: prevProjects.map((p) =>
+        p.id === projectId ? { ...p, runCommand: runCommand || undefined } : p,
+      ),
+    });
+    try {
+      await getRunService().setProjectRunCommand(projectId, runCommand);
+      const projects = await projectService.getProjects();
+      set({ projects });
+    } catch (err) {
+      set({ error: (err as Error).message, projects: prevProjects });
+    }
   },
 }));
 

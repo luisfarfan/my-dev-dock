@@ -125,11 +125,28 @@
       "expand": "Expand",
       "collapse": "Minimize",
       "open": "Open",
+      "run": "Run",
+      "runWorkspace": "Run workspace",
+      "noCommand": "No run command detected",
       "empty": "No projects in this workspace yet. Edit it to add projects.",
       "projectCount": "{{count}} projects",
+      "runnableCount": "{{count}} runnable",
       "pendingMatches": "+{{count}} suggested",
       "hintExpanded": "Quick launch any project below",
       "hintCollapsed": "Minimized — tap a chip or expand to see all"
+    },
+    "run": {
+      "title": "Run {{name}}",
+      "subtitle": "Review detected commands, override per project, then launch in your default terminal.",
+      "close": "Close run panel",
+      "loading": "Detecting run commands…",
+      "commandPlaceholder": "Custom command (e.g. bun run dev)",
+      "noCommand": "No command",
+      "configure": "Edit command",
+      "saveCommand": "Save override",
+      "readyCount": "{{count}} of {{total}} ready",
+      "cancel": "Cancel",
+      "confirm": "Run {{count}} projects"
     },
     "match": {
       "prefix": "prefix",
@@ -158,6 +175,18 @@
       "saving": "Saving…",
       "delete": "Delete"
     }
+  },
+  "runProcesses": {
+    "title": "Running processes",
+    "subtitle": "Dev servers and commands stay inside myDevDock — switch tabs, read output, stop when done.",
+    "close": "Close processes panel",
+    "empty": "Nothing running yet. Use Run on a workspace project to start here.",
+    "runningCount": "{{count}} live",
+    "statusRunning": "live",
+    "statusExited": "done",
+    "stop": "Stop",
+    "stopAll": "Stop all",
+    "pickSession": "Pick a process on the left to view its terminal."
   },
   "settingsPage": {
     "title": "Settings",

@@ -65,11 +65,17 @@
 11. **i18n**
    - `react-i18next` used in dashboard, cards, command palette, settings-related UI.
 
+12. **Run (workspaces)**
+   - **Smart run command** per project path: `package.json` scripts (`dev`, `start:dev`, `start`, …) via npm/pnpm/bun/yarn; fallbacks for Python, Cargo, Go. Per-project **override** persisted as `runCommand` on `Project`.
+   - **Workspace panel**: amber **Run** per tile + **Run workspace** header → pre-flight drawer (checkboxes, edit command, batch launch with `launchDelay` from settings).
+   - Runs spawn in an **embedded PTY terminal inside the app** (`portable-pty` + xterm.js). **Running processes** drawer (header terminal icon + badge) lists all sessions, live output, stop/stop-all.
+   - Commands: `resolve_project_run_command`, `set_project_run_command`, `run_project_in_terminal`, `run_projects_in_terminal`, `list_run_sessions`, `kill_run_session`, `kill_all_run_sessions`, `write_run_session`, `resize_run_session`. Rust: `src-tauri/src/embedded_terminal.rs` + command detection in `run_terminal.rs`. Frontend: `getRunService()`, `use-run-sessions-store.ts`, `src/app/features/run/`.
+
 ## Tauri commands (Rust → frontend)
 
 Registered in `src-tauri/src/lib.rs` `generate_handler!`:
 
-`get_projects`, `get_groups`, `get_workspaces`, `get_settings`, `update_settings`, `scan_directory`, `register_project`, `remove_project`, `get_installed_editors`, `open_in_editor`, `launch_project`, `launch_group`, `sync_project`, `create_group`, `update_group`, `delete_group`, `create_workspace`, `update_workspace`, `delete_workspace`, `clear_all`, `detect_raycast_installation`, `export_raycast_launcher`, `scan_env_vars`.
+`get_projects`, `get_groups`, `get_workspaces`, `get_settings`, `update_settings`, `scan_directory`, `register_project`, `remove_project`, `get_installed_editors`, `open_in_editor`, `launch_project`, `launch_group`, `sync_project`, `create_group`, `update_group`, `delete_group`, `create_workspace`, `update_workspace`, `delete_workspace`, `clear_all`, `detect_raycast_installation`, `export_raycast_launcher`, `scan_env_vars`, `resolve_project_run_command`, `set_project_run_command`, `run_project_in_terminal`, `run_projects_in_terminal`, `list_run_sessions`, `kill_run_session`, `kill_all_run_sessions`, `write_run_session`, `resize_run_session`.
 
 Frontend must use **`src/lib/services/`** (`tauri.ts` / `mock.ts`), not raw `invoke()` in components.
 
@@ -84,6 +90,7 @@ Frontend must use **`src/lib/services/`** (`tauri.ts` / `mock.ts`), not raw `inv
 | Theme | `src/lib/ui-theme.ts`, `use-ui-theme-store.ts`, `styles.css` |
 | Env index | `src/lib/env-index-utils.ts`, `src/app/features/env-index/`, `scan_env_vars` in `lib.rs` |
 | Workspaces | `src/lib/workspace-suggestions.ts`, `src/app/features/workspaces/`, `use-active-workspace-store.ts` |
+| Run / embedded terminal | `src-tauri/src/embedded_terminal.rs`, `src-tauri/src/run_terminal.rs`, `src/lib/services/run-service.ts`, `src/app/features/run/`, `workspace-run-drawer.tsx` |
 | UI kit export | `src/lib/*` barrel `@org/ui-kit` |
 
 ## Non-goals / caveats

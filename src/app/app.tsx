@@ -17,6 +17,7 @@ import { useLocaleStore } from "./store/use-locale-store";
 import { useProjectStore } from "./store/use-project-store";
 import { useSettingsDrawerStore } from "./store/use-settings-drawer-store";
 import { useUiThemeStore } from "./store/use-ui-theme-store";
+import { ensureRunSessionListeners } from "./store/use-run-sessions-store";
 import { isTauriRuntime } from "./shared/utils/is-tauri-runtime";
 
 export function App() {
@@ -35,6 +36,7 @@ export function App() {
 
   useEffect(() => {
     if (!isTauriRuntime()) return;
+    ensureRunSessionListeners();
 
     let unlistenTheme: (() => void) | undefined;
     let unlistenSettings: (() => void) | undefined;

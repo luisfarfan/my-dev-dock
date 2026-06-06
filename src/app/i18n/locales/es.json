@@ -126,11 +126,28 @@
       "expand": "Expandir",
       "collapse": "Minimizar",
       "open": "Abrir",
+      "run": "Ejecutar",
+      "runWorkspace": "Ejecutar workspace",
+      "noCommand": "Sin comando de ejecución detectado",
       "empty": "Aún no hay proyectos en este workspace. Edítalo para añadir algunos.",
       "projectCount": "{{count}} proyectos",
+      "runnableCount": "{{count}} ejecutables",
       "pendingMatches": "+{{count}} sugeridos",
       "hintExpanded": "Lanza cualquier proyecto desde aquí",
       "hintCollapsed": "Minimizado — pulsa un chip o expande para ver todos"
+    },
+    "run": {
+      "title": "Ejecutar {{name}}",
+      "subtitle": "Revisa los comandos detectados, personaliza por proyecto y lánzalos en tu terminal predeterminada.",
+      "close": "Cerrar panel de ejecución",
+      "loading": "Detectando comandos…",
+      "commandPlaceholder": "Comando personalizado (ej. bun run dev)",
+      "noCommand": "Sin comando",
+      "configure": "Editar comando",
+      "saveCommand": "Guardar override",
+      "readyCount": "{{count}} de {{total}} listos",
+      "cancel": "Cancelar",
+      "confirm": "Ejecutar {{count}} proyectos"
     },
     "match": {
       "prefix": "prefijo",
@@ -159,6 +176,18 @@
       "saving": "Guardando…",
       "delete": "Eliminar"
     }
+  },
+  "runProcesses": {
+    "title": "Procesos en ejecución",
+    "subtitle": "Los servidores y comandos viven dentro de myDevDock — cambia de pestaña, lee la salida y detén cuando quieras.",
+    "close": "Cerrar panel de procesos",
+    "empty": "Nada en ejecución. Usa Ejecutar en un proyecto del workspace para empezar aquí.",
+    "runningCount": "{{count}} activos",
+    "statusRunning": "activo",
+    "statusExited": "fin",
+    "stop": "Detener",
+    "stopAll": "Detener todo",
+    "pickSession": "Elige un proceso a la izquierda para ver su terminal."
   },
   "settingsPage": {
     "title": "Ajustes",

@@ -85,6 +85,8 @@ const MOCK_SETTINGS: AppSettings = {
   sortBy: 'lastOpenedAt',
   sortDirection: 'desc',
   raycastScriptsPath: '',
+  defaultTerminal: 'terminal',
+  minimizeTerminalOnRun: true,
 };
 
 export class MockProjectService implements ProjectService {
