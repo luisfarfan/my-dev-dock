@@ -84,7 +84,7 @@ export class MockRunService implements RunService {
     return;
   }
 
-  async resolveRunCommand(path: string, custom?: string): Promise<RunCommandResolution> {
+  async resolveRunCommand(_path: string, custom?: string): Promise<RunCommandResolution> {
     if (custom?.trim()) {
       return { command: custom.trim(), source: 'custom', confidence: 'high' };
     }
