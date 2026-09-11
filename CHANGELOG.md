@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/luisfarfan/my-dev-dock/compare/v1.2.0...v1.3.0) (2026-09-11)
+
+
+### Features
+
+* add embedded terminal run for workspace projects ([753442d](https://github.com/luisfarfan/my-dev-dock/commit/753442d021fc41883528a1cee9e3399bdcb1ca9c))
+
 # [1.2.0](https://github.com/luisfarfan/my-dev-dock/compare/v1.1.0...v1.2.0) (2026-06-01)
 
 
